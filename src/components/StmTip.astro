@@ -1,0 +1,77 @@
+---
+// AFM/STM project figure (PLAN.md §6.4): a deliberately simplified constant-current feedback sketch.
+import VizGlyph from './VizGlyph.astro';
+import { useT, type Lang } from '../i18n/ui';
+import { czechTypo } from '../lib/typo';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const typo = (s: string) => (lang === 'cs' ? czechTypo(s) : s);
+---
+
+<div class="stm" data-stm data-lang={lang}>
+  <p class="stm__note">{typo(t('stm.note'))}</p>
+  <div class="stm__stage">
+    <div class="stm__fallback"><VizGlyph kind="stm-tip-animation" /></div>
+    <canvas class="stm__canvas" role="img" aria-label={t('stm.alt')}></canvas>
+  </div>
+  <div class="stm__live">
+    <ul class="viz-legend">
+      <li><i class="warm"></i>{t('stm.legend.trace')}</li>
+      <li><i class="dashed"></i>{typo(t('stm.legend.ideal'))}</li>
+      <li class="stm__current">I / I<sub>set</sub> = <output data-current></output></li>
+    </ul>
+    <div class="stm__controls" role="group" aria-label={t('stm.controls')}>
+      <button type="button" class="viz-btn viz-btn--icon" data-act="play" aria-pressed="true" aria-label={t('stm.pause')} data-play={t('stm.play')} data-pause={t('stm.pause')}>
+        <svg class="icon-play" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"></path></svg>
+        <svg class="icon-pause" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z" fill="currentColor"></path></svg>
+      </button>
+      <label class="stm__gain">
+        <span>{t('stm.p')}</span>
+        <input type="range" class="viz-range" data-gain="p" min="0" max="1.5" step="0.05" value="0.3" />
+        <output data-out="p"></output>
+      </label>
+      <label class="stm__gain">
+        <span>{t('stm.i')}</span>
+        <input type="range" class="viz-range" data-gain="i" min="0.5" max="40" step="0.5" value="8" />
+        <output data-out="i"></output>
+      </label>
+    </div>
+  </div>
+</div>
+<figcaption class="viz-caption">{typo(t('stm.caption'))}</figcaption>
+
+<script>
+  import { whenVisible } from '../scripts/chart';
+  for (const root of document.querySelectorAll<HTMLElement>('[data-stm]')) {
+    whenVisible(root, () => {
+      import('../scripts/stm-tip').then((m) => m.mountStmTip(root)).catch(() => {});
+    });
+  }
+</script>
+
+<style>
+  .stm { font-family: var(--f-mono); font-size: 0.75rem; }
+  .stm__note { color: var(--c-amber); }
+  .stm__stage { margin-top: var(--s-4); overflow: hidden; }
+  .stm__canvas { display: none; width: 100%; }
+  .stm.is-live .stm__canvas { display: block; }
+  .stm.is-live .stm__fallback,
+  .stm:not(.is-live) .stm__live { display: none; }
+  .stm__live { display: grid; gap: var(--s-4); margin-top: var(--s-3); }
+  .stm__current { margin-left: auto; color: var(--c-star); font-variant-numeric: tabular-nums; }
+  .stm__current output { display: inline-block; min-width: 4ch; }
+  .stm__current sub { font-size: 0.8em; }
+  .stm__controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3) var(--s-5);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--c-line);
+  }
+  .stm__gain { display: flex; flex: 1 1 14rem; align-items: center; gap: var(--s-3); color: var(--c-dim); }
+  .stm__gain span { flex: none; }
+  .stm__gain output { flex: 0 0 4ch; color: var(--c-star); font-variant-numeric: tabular-nums; text-align: right; }
+</style>

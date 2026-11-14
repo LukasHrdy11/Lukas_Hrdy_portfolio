@@ -1,0 +1,68 @@
+---
+// Outreach figure (PLAN.md §6.5): a light curve measured with the kids at the astronomy camp.
+// Without JS only the caption is shown.
+import { useT, type Lang } from '../i18n/ui';
+import { withBase } from '../lib/paths';
+import { profile } from '../lib/profile';
+import { loc } from '../lib/typo';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const lc = profile.outreach.astrocamp_lightcurve;
+
+// Keys and star names as in public/data/light-curves.json; the YAML `show` series comes first.
+const all = [
+  { key: 'drak', star: 'FU Dra' },
+  { key: 'labut', star: 'V2556 Cyg' },
+];
+const series = [...all].sort((a, b) => Number(b.key === lc.show) - Number(a.key === lc.show));
+const strings = {
+  lang,
+  time: t('lc.time'),
+  timeHelio: t('lc.timeHelio'),
+  mag: t('lc.mag'),
+  other: loc(t('lc.other'), lang),
+  show: lc.show,
+  helio: ['labut'],
+};
+---
+
+<figure class="lc" data-lightcurve data-src={withBase(lc.data)} data-alt={t('lc.alt')} data-strings={JSON.stringify(strings)}>
+  <div class="lc__tabs" role="group" aria-label={t('lc.star')}>
+    {series.map((s, n) => (
+      <button type="button" class="viz-btn" data-series={s.key} aria-pressed={n === 0 ? 'true' : 'false'}>{s.star}</button>
+    ))}
+  </div>
+  <div class="lc__plot" data-plot></div>
+  <figcaption class="viz-caption" data-caption>{loc(lc.caption, lang)}</figcaption>
+</figure>
+
+<script>
+  import { whenVisible } from '../scripts/chart';
+  for (const root of document.querySelectorAll<HTMLElement>('[data-lightcurve]')) {
+    whenVisible(root, () => {
+      import('../scripts/light-curve').then((m) => m.mountLightCurve(root)).catch(() => {});
+    });
+  }
+</script>
+
+<style is:global>
+  .lc {
+    max-width: 52rem;
+    margin: var(--s-6) 0 0;
+    padding: var(--s-4);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-md);
+    background: var(--c-deep);
+  }
+  @media (min-width: 36rem) {
+    .lc { padding: var(--s-5); }
+  }
+  .lc__tabs { display: flex; gap: var(--s-1); font-family: var(--f-mono); font-size: 0.75rem; }
+  .lc:not(.is-live) .lc__tabs { display: none; }
+  .lc.is-live .lc__plot { margin-top: var(--s-4); }
+  .lc:not(.is-live) .viz-caption { margin-top: 0; }
+  .lc__err { fill: none; stroke: var(--c-line-strong); stroke-width: 1; }
+  .lc__dots circle { fill: var(--c-ice); }
+</style>

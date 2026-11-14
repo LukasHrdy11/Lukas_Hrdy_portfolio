@@ -1,6 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
+import DeuteronChart from './DeuteronChart.astro';
 import KmcCrystal from './KmcCrystal.astro';
+import StmTip from './StmTip.astro';
 import VizGlyph from './VizGlyph.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { localPath, withBase } from '../lib/paths';
@@ -12,6 +14,7 @@ const { lang, project: p } = Astro.props;
 const t = useT(lang);
 const body = p.body[lang].map((text) => loc(text, lang));
 const links = p.links ?? [];
+const interactive = ['kmc-crystal', 'deuteron-wavefunction', 'stm-tip-animation'];
 ---
 
 <Base lang={lang} title={loc(p.title, lang)} description={loc(p.summary, lang)}>
@@ -34,7 +37,10 @@ const links = p.links ?? [];
     </div>
 
     <figure class="project__viz" data-viz={p.visualization}>
-      {p.visualization === 'kmc-crystal' ? <KmcCrystal lang={lang} /> : <VizGlyph kind={p.visualization} />}
+      {p.visualization === 'kmc-crystal' && <KmcCrystal lang={lang} />}
+      {p.visualization === 'deuteron-wavefunction' && <DeuteronChart lang={lang} />}
+      {p.visualization === 'stm-tip-animation' && <StmTip lang={lang} />}
+      {!interactive.includes(p.visualization ?? '') && <VizGlyph kind={p.visualization} />}
     </figure>
 
     {

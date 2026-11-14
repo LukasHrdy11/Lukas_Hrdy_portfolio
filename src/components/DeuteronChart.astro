@@ -1,0 +1,80 @@
+---
+// Deuteron project figure (PLAN.md §6.3): u(r), w(r) and the potential, with a hover readout.
+// The static drawing (VizGlyph, the same curves) stays when JS is unavailable.
+import VizGlyph from './VizGlyph.astro';
+import deuteron from '../../public/data/deuteron.json';
+import { useT, type Lang } from '../i18n/ui';
+import { czechTypo } from '../lib/typo';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const typo = (s: string) => (lang === 'cs' ? czechTypo(s) : s);
+
+const fmt = (v: number, digits: number) =>
+  new Intl.NumberFormat(lang, { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(v).replace('-', '−');
+const derived = deuteron.derived_from_wavefunction_unverified; // values approved by Lukáš (PLAN.md §6.3)
+const strings = {
+  lang,
+  r: t('deut.r'),
+  wave: t('deut.yWave'),
+  potential: t('deut.yPot'),
+  hint: t('deut.hint'),
+};
+---
+
+<div class="deut" data-deuteron data-alt={t('deut.alt')} data-strings={JSON.stringify(strings)}>
+  <script type="application/json" set:html={JSON.stringify(deuteron.points)} />
+  <div class="deut__bar">
+    <div class="deut__tabs" role="group" aria-label={t('deut.panel')}>
+      <button type="button" class="viz-btn" data-panel="wave" aria-pressed="true">{t('deut.tab.wave')}</button>
+      <button type="button" class="viz-btn" data-panel="potential" aria-pressed="false">{t('deut.tab.potential')}</button>
+    </div>
+    <ul class="viz-legend" data-legend="wave">
+      <li><i></i>{t('deut.legend.u')}</li>
+      <li><i class="warm"></i>{t('deut.legend.w')}</li>
+    </ul>
+    <ul class="viz-legend" data-legend="potential" hidden>
+      <li><i></i>{t('deut.legend.vc')}</li>
+      <li><i class="warm"></i>{t('deut.legend.vt')}</li>
+    </ul>
+  </div>
+  <div class="deut__plot" data-plot><VizGlyph kind="deuteron-wavefunction" /></div>
+  <p class="deut__readout" data-readout aria-live="off"></p>
+  <p class="deut__stats">
+    <span>E<sub>B</sub> = {fmt(deuteron.binding_energy_MeV, 2)} MeV ({t('deut.exp')} {fmt(deuteron.binding_energy_exp_MeV, 4)} MeV)</span>
+    <span>P<sub>D</sub> ≈ {fmt(derived.P_D_percent, 1)} %</span>
+    <span>r<sub>rms</sub> ≈ {fmt(derived.rms_matter_radius_fm, 2)} fm</span>
+    <span>Q ≈ {fmt(derived.quadrupole_fm2, 3)} fm²</span>
+  </p>
+</div>
+<figcaption class="viz-caption">{typo(t('deut.caption'))}</figcaption>
+
+<script>
+  import { whenVisible } from '../scripts/chart';
+  for (const root of document.querySelectorAll<HTMLElement>('[data-deuteron]')) {
+    whenVisible(root, () => {
+      import('../scripts/deuteron-chart').then((m) => m.mountDeuteronChart(root)).catch(() => {});
+    });
+  }
+</script>
+
+<style>
+  .deut { font-family: var(--f-mono); font-size: 0.75rem; }
+  .deut__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-3) var(--s-5); }
+  .deut__tabs { display: flex; gap: var(--s-1); }
+  .deut__plot { margin-top: var(--s-4); }
+  .deut__readout { min-height: 1.6em; margin-top: var(--s-1); color: var(--c-star); font-variant-numeric: tabular-nums; }
+  .deut:not(.is-live) .deut__bar,
+  .deut:not(.is-live) .deut__readout { display: none; }
+  .deut__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1) var(--s-5);
+    margin-top: var(--s-3);
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--c-line);
+    color: var(--c-dim);
+  }
+  .deut__stats sub { font-size: 0.8em; }
+</style>

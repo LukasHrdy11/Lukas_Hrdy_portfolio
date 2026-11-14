@@ -1,6 +1,7 @@
 ---
 import Section from './Section.astro';
 import EntryList from './EntryList.astro';
+import LightCurve from './LightCurve.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { onWeb, profile } from '../lib/profile';
 import { loc } from '../lib/typo';
@@ -43,6 +44,7 @@ const entries = onWeb(items).map((i) => ({
 
   <h3 class="sub sub--next">{t('outreach.activities')}</h3>
   <EntryList entries={entries} />
+  <LightCurve lang={lang} />
 </Section>
 
 <script>
