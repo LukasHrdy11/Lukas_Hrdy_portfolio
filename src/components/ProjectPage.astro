@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import KmcCrystal from './KmcCrystal.astro';
 import VizGlyph from './VizGlyph.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { localPath, withBase } from '../lib/paths';
@@ -32,17 +33,9 @@ const links = p.links ?? [];
       {body.map((text) => <p>{text}</p>)}
     </div>
 
-    <!-- Phase 3 replaces this drawing with the interactive visualization. -->
     <figure class="project__viz" data-viz={p.visualization}>
-      <VizGlyph kind={p.visualization} />
+      {p.visualization === 'kmc-crystal' ? <KmcCrystal lang={lang} /> : <VizGlyph kind={p.visualization} />}
     </figure>
-
-    <section class="project__results" aria-labelledby="results-title">
-      <h2 id="results-title">{t('project.results')}</h2>
-      <ul>
-        {p.results.map((r) => <li>{loc(r, lang)}</li>)}
-      </ul>
-    </section>
 
     {
       p.caveat && (
@@ -52,6 +45,13 @@ const links = p.links ?? [];
         </aside>
       )
     }
+
+    <section class="project__results" aria-labelledby="results-title">
+      <h2 id="results-title">{t('project.results')}</h2>
+      <ul>
+        {p.results.map((r) => <li>{loc(r, lang)}</li>)}
+      </ul>
+    </section>
 
     {
       links.length > 0 && (
@@ -131,6 +131,9 @@ const links = p.links ?? [];
     border: 1px solid var(--c-line);
     border-radius: var(--r-md);
     background: var(--c-deep);
+  }
+  @media (max-width: 36rem) {
+    .project__viz { padding: var(--s-4); }
   }
 
   .project__results h2,

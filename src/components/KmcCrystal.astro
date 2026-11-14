@@ -1,0 +1,280 @@
+---
+// kMC project figure (PLAN.md §6.2): the simulated crystal in 3D, browsable level by level.
+// The static drawing (VizGlyph) is rendered first and stays when WebGL or JS is unavailable.
+import VizGlyph from './VizGlyph.astro';
+import { useT, type Lang, type UiKey } from '../i18n/ui';
+import { withBase } from '../lib/paths';
+import { czechTypo } from '../lib/typo';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const tt = (key: UiKey) => (lang === 'cs' ? czechTypo(t(key)) : t(key));
+
+// Order matches `runs` in the data file.
+const cases = ['neutral', 'e_es_dop0.6', 'e_s_dop2.1'];
+const strings = {
+  lang,
+  layers: t('kmc.layers'),
+  levels: t('kmc.levels'),
+  atoms: t('kmc.atoms'),
+  dopants: t('kmc.dopants'),
+  cases: Object.fromEntries(cases.map((c) => [c, tt(`kmc.note.${c}` as UiKey)])),
+};
+const views = ['oblique', 'top', 'side'];
+---
+
+<div class="kmc" data-kmc data-src={withBase('/data/kmc-t10-crystal.json')} data-strings={JSON.stringify(strings)}>
+  <div class="kmc__stage" data-stage>
+    <div class="kmc__fallback"><VizGlyph kind="kmc-crystal" /></div>
+    <canvas class="kmc__canvas" tabindex="0" role="img" aria-label={t('kmc.alt')} aria-describedby="kmc-hint"></canvas>
+    <p id="kmc-hint" class="visually-hidden">{t('kmc.hint')}</p>
+    <p class="kmc__count" data-count aria-live="polite"></p>
+    <ul class="kmc__legend">
+      <li><span class="kmc__swatch kmc__swatch--al"></span>{tt('kmc.legend.al')}</li>
+      <li><span class="kmc__swatch kmc__swatch--dop"></span>{t('kmc.legend.dop')}</li>
+    </ul>
+  </div>
+
+  <div class="kmc__controls" data-controls role="group" aria-label={t('kmc.controls')} hidden>
+    <div class="kmc__row kmc__row--cases" role="group" aria-label={t('kmc.case')}>
+      {cases.map((c, n) => (
+        <button type="button" class="kmc__btn" data-case={c} aria-pressed={n === 0 ? 'true' : 'false'}>
+          {tt(`kmc.case.${c}` as UiKey)}
+        </button>
+      ))}
+    </div>
+    <p class="kmc__note" data-note aria-live="polite"></p>
+
+    <div class="kmc__row">
+      <span class="kmc__label" id="kmc-growth-label">{t('kmc.growth')}</span>
+      <button type="button" class="kmc__btn kmc__btn--icon" data-act="play" aria-pressed="false" aria-label={t('kmc.play')} data-play={t('kmc.play')} data-pause={t('kmc.pause')}>
+        <svg class="kmc__icon-play" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"></path></svg>
+        <svg class="kmc__icon-pause" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z" fill="currentColor"></path></svg>
+      </button>
+      <input class="kmc__range" type="range" min="0" max="9" step="1" value="9" data-growth aria-labelledby="kmc-growth-label" />
+      <output class="kmc__out" data-growth-out></output>
+    </div>
+
+    <div class="kmc__row">
+      <span class="kmc__label">{t('kmc.slice')}</span>
+      <div class="kmc__dual" data-slice-fill>
+        <input class="kmc__range" type="range" min="0" max="29" step="1" value="0" data-z0 aria-label={t('kmc.sliceFrom')} />
+        <input class="kmc__range" type="range" min="0" max="29" step="1" value="29" data-z1 aria-label={t('kmc.sliceTo')} />
+      </div>
+      <output class="kmc__out" data-slice-out></output>
+    </div>
+
+    <div class="kmc__row kmc__row--view">
+      <button type="button" class="kmc__btn" data-act="dopants" aria-pressed="false">{t('kmc.dopantsOnly')}</button>
+      <span class="kmc__spacer"></span>
+      <div class="kmc__group" role="group" aria-label={t('kmc.view')}>
+        {views.map((v) => (
+          <button type="button" class="kmc__btn" data-view={v} aria-pressed="false">{t(`kmc.view.${v}` as UiKey)}</button>
+        ))}
+      </div>
+      <div class="kmc__group">
+        <button type="button" class="kmc__btn kmc__btn--icon" data-act="zoom-out" aria-label={t('solar.zoomOut')} title={t('solar.zoomOut')}>−</button>
+        <button type="button" class="kmc__btn kmc__btn--icon" data-act="zoom-in" aria-label={t('solar.zoomIn')} title={t('solar.zoomIn')}>+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<figcaption class="kmc__caption">
+  {tt('kmc.caption')} <span>{tt('kmc.captionParams')}</span>
+</figcaption>
+
+<script>
+  // three.js and the 695 kB data file are fetched only once the figure scrolls near the viewport.
+  for (const root of document.querySelectorAll<HTMLElement>('[data-kmc]')) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        import('../scripts/kmc-crystal')
+          .then((m) => m.mountKmcCrystal(root))
+          .catch(() => {
+            /* the static drawing stays */
+          });
+      },
+      { rootMargin: '300px' },
+    );
+    io.observe(root);
+  }
+</script>
+
+<style is:global>
+  .kmc { font-family: var(--f-mono); font-size: 0.75rem; }
+  .kmc__stage {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    max-height: 34rem;
+    width: 100%;
+    overflow: hidden;
+  }
+  @media (min-width: 40rem) {
+    .kmc__stage { aspect-ratio: 16 / 10; }
+  }
+  .kmc__fallback,
+  .kmc__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .kmc__fallback { display: grid; place-items: center; transition: opacity 400ms var(--ease), visibility 0s 400ms; }
+  .kmc__canvas {
+    display: block;
+    opacity: 0;
+    cursor: grab;
+    /* touch: horizontal drag rotates, vertical swipe still scrolls the page */
+    touch-action: pan-y;
+    transition: opacity 400ms var(--ease);
+  }
+  .kmc__canvas:focus-visible { outline: 1px solid var(--c-line-strong); outline-offset: -1px; }
+  .kmc.is-dragging .kmc__canvas { cursor: grabbing; }
+  .kmc.is-live .kmc__canvas { opacity: 1; }
+  .kmc.is-live .kmc__fallback { opacity: 0; visibility: hidden; }
+
+  .kmc__count,
+  .kmc__legend {
+    position: absolute;
+    left: 0;
+    margin: 0;
+    color: var(--c-dim);
+    line-height: 1.5;
+    pointer-events: none;
+    text-shadow: 0 0 6px var(--c-deep), 0 0 2px var(--c-deep);
+  }
+  .kmc__count { top: 0; font-variant-numeric: tabular-nums; }
+  .kmc__legend { bottom: 0; display: flex; flex-wrap: wrap; gap: 0 var(--s-4); }
+  .kmc:not(.is-live) .kmc__legend { display: none; }
+  .kmc__legend li { display: flex; align-items: center; gap: var(--s-2); }
+  .kmc__swatch { width: 1.5rem; height: 0.5rem; border-radius: 1px; }
+  .kmc__swatch--al { background: linear-gradient(90deg, #25405f, #5f9fc9, #e3f1fb); }
+  .kmc__swatch--dop { width: 0.5rem; border-radius: 50%; background: #ffa62e; }
+
+  .kmc__controls {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-4);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--c-line);
+  }
+  .kmc__controls[hidden] { display: none; }
+  .kmc__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-3); }
+  .kmc__row--cases { gap: var(--s-2); }
+  .kmc__group { display: flex; gap: var(--s-1); }
+  .kmc__spacer { flex: 1; }
+  .kmc__label { flex: 0 0 9.5rem; color: var(--c-dim); }
+  .kmc__out { flex: 0 0 9.5rem; color: var(--c-star); font-variant-numeric: tabular-nums; text-align: right; }
+  .kmc__note {
+    min-height: 3em;
+    max-width: var(--measure);
+    color: var(--c-dim);
+    font-family: var(--f-text);
+    font-size: var(--t-sm);
+    line-height: 1.5;
+  }
+
+  .kmc__btn {
+    min-height: 2rem;
+    padding: 0 var(--s-3);
+    border: 1px solid var(--c-line-strong);
+    border-radius: var(--r-sm);
+    background: transparent;
+    color: var(--c-star);
+    font: inherit;
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  }
+  .kmc__btn:hover { border-color: var(--c-ice); color: var(--c-ice); }
+  .kmc__btn[aria-pressed='true']:not([data-act='play']) {
+    border-color: var(--c-ice);
+    background: color-mix(in srgb, var(--c-ice) 12%, transparent);
+    color: var(--c-ice);
+  }
+  .kmc__btn--icon { display: inline-grid; place-items: center; width: 2rem; padding: 0; font-size: 1rem; line-height: 1; }
+  .kmc__btn[aria-pressed='true'] .kmc__icon-play,
+  .kmc__btn[aria-pressed='false'] .kmc__icon-pause { display: none; }
+
+  /* Range inputs: thin track, round thumb */
+  .kmc__range {
+    flex: 1 1 8rem;
+    min-width: 0;
+    height: 2rem;
+    margin: 0;
+    background: transparent;
+    accent-color: var(--c-ice);
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+  .kmc__range::-webkit-slider-runnable-track { height: 2px; background: var(--c-line-strong); }
+  .kmc__range::-moz-range-track { height: 2px; background: var(--c-line-strong); }
+  .kmc__range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    margin-top: -6px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--c-ice);
+  }
+  .kmc__range::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--c-ice); }
+
+  /* Two overlaid range inputs form one from–to slider; only the thumbs take pointer events. */
+  .kmc__dual { position: relative; flex: 1 1 8rem; min-width: 0; height: 2rem; }
+  .kmc__dual::before,
+  .kmc__dual::after {
+    content: '';
+    position: absolute;
+    top: calc(50% - 1px);
+    height: 2px;
+    pointer-events: none;
+  }
+  .kmc__dual::before { left: 0; right: 0; background: var(--c-line-strong); }
+  .kmc__dual::after {
+    left: calc(7px + (100% - 14px) * var(--from, 0%) / 100%);
+    right: calc(7px + (100% - 14px) * (100% - var(--to, 100%)) / 100%);
+    background: var(--c-ice);
+  }
+  .kmc__dual .kmc__range { position: absolute; inset: 0; width: 100%; pointer-events: none; }
+  .kmc__dual .kmc__range::-webkit-slider-runnable-track { background: transparent; }
+  .kmc__dual .kmc__range::-moz-range-track { background: transparent; }
+  .kmc__dual .kmc__range::-webkit-slider-thumb { position: relative; z-index: 1; pointer-events: auto; }
+  .kmc__dual .kmc__range::-moz-range-thumb { pointer-events: auto; }
+
+  .kmc__caption {
+    margin-top: var(--s-4);
+    max-width: var(--measure);
+    color: var(--c-dim);
+    font-size: var(--t-sm);
+    line-height: 1.55;
+  }
+
+  @media (max-width: 36rem) {
+    /* label + readout on one line, the slider on the next */
+    .kmc__label { flex: 1 1 50%; }
+    .kmc__out { order: 1; flex: 0 0 auto; }
+    .kmc__row > .kmc__btn--icon,
+    .kmc__row > .kmc__range,
+    .kmc__dual { order: 2; }
+    .kmc__dual { flex-basis: 100%; }
+    .kmc__row--cases .kmc__btn { flex: 1 1 100%; padding-block: var(--s-2); text-align: left; }
+    .kmc__spacer { display: none; }
+    .kmc__row--view .kmc__group:last-child { order: 1; margin-left: auto; }
+    .kmc__row--view .kmc__group:not(:last-child) { order: 2; flex-basis: 100%; }
+    .kmc__row--view .kmc__group:not(:last-child) .kmc__btn { flex: 1; }
+  }
+  @media (pointer: coarse) {
+    .kmc__btn { min-height: 2.5rem; }
+    .kmc__btn--icon { width: 2.5rem; }
+    .kmc__range::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -9px; }
+    .kmc__range::-moz-range-thumb { width: 20px; height: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .kmc__fallback,
+    .kmc__canvas { transition: none; }
+  }
+</style>

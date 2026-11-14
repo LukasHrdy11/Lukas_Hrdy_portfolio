@@ -86,8 +86,8 @@ featured_projects:
       - { cs: "Velké běhy: ~500 × 500 mřížka, tisíce vrstev, jednotky hodin", en: "Large runs: ~500 × 500 grid, thousands of layers, a few hours" }
       - { cs: "Trend: silnější Ehrlichova–Schwoebelova bariéra dopantu → dopanty se shlukují", en: "Trend: a stronger dopant Ehrlich–Schwoebel barrier → dopants cluster" }
     caveat:
-      cs: "Energetické parametry zatím nejsou odvozené z DFT ani z měření (experimentální data zatím nejsou k dispozici), fyzikálně smysluplné jsou proto hlavně trendy, ne absolutní hodnoty."
-      en: "The energetic parameters are not yet derived from DFT or measurement (no experimental data available yet), so the trends are physically meaningful, not the absolute numbers."
+      cs: "Energetické parametry zatím nejsou odvozené z měření (experimentální data zatím nejsou k dispozici), fyzikálně smysluplné jsou proto hlavně trendy, ne absolutní hodnoty."
+      en: "The energetic parameters are not yet derived from measurement (no experimental data available yet), so the trends are physically meaningful, not the absolute numbers."
     visualization: kmc-crystal          # data: /data/kmc-t10-crystal.json
     links: []                           # repozitář je soukromý
     cv: true
