@@ -11,7 +11,7 @@
 |---|---|---|
 | 1 Foundation + design system + all pages (1a ⏸, 1b) | ✅ done 2026-11-14 | Subpages show static drawings (`VizGlyph.astro`) where phase 3 puts the visualizations; hero is a static SVG (`HeroScene.astro`, keep as WebGL fallback); CV links appear once `public/cv/*.pdf` exist; three/d3 not installed yet |
 | 2 Hero: live 3D Solar System | ✅ done 2026-11-14 | `SolarSystem.astro` + `src/scripts/solar-system.ts` (lazy three.js), math in `src/lib/ephemeris.ts`, acceptance checks `npm run check:ephemeris`. Wheel zoom only after a click on the scene (or Ctrl); touch drag rotates horizontally only; clock clamped to 1800–2050; comet shown ±6 yr around perihelion |
-| 3 Project visualizations (3a kMC ⏸, 3b rest) | ⬜ todo | |
+| 3 Project visualizations (3a kMC ⏸, 3b rest) | ✅ done 2026-11-14 | `KmcCrystal` (three.js), `DeuteronChart`, `StmTip`, `LightCurve` (+ `src/scripts/*`, shared `chart.ts`; d3 submodules `d3-array d3-scale d3-shape` only). Ephemerides subpage keeps its static `VizGlyph` (hero is its visualization). YouTube lite embeds live in `Outreach.astro` |
 | 4 CV generator (YAML → 2 PDFs) + CI | ⬜ todo | |
 | 5 Polish, a11y, SEO, final review | ⬜ todo | |
 
