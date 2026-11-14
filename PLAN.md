@@ -9,14 +9,15 @@
 
 | Phase | State | Notes |
 |---|---|---|
-| 1 Foundation + design system + all pages (1a ⏸, 1b) | ⬜ todo | |
+| 1 Foundation + design system + all pages (1a ⏸, 1b) | ✅ done 2026-11-14 | Subpages show static drawings (`VizGlyph.astro`) where phase 3 puts the visualizations; hero is a static SVG (`HeroScene.astro`, keep as WebGL fallback); CV links appear once `public/cv/*.pdf` exist; three/d3 not installed yet |
 | 2 Hero: live 3D Solar System | ⬜ todo | |
 | 3 Project visualizations (3a kMC ⏸, 3b rest) | ⬜ todo | |
 | 4 CV generator (YAML → 2 PDFs) + CI | ⬜ todo | |
 | 5 Polish, a11y, SEO, final review | ⬜ todo | |
 
 Feedback log (Lukáš's review comments that change the plan go here):
-- …
+- 2026-11-14: the deuteron internship was at the Institute of Physics (Fyzikální ústav AV ČR), not the Nuclear Physics Institute — fixed in `content/profile.yaml`.
+- 2026-11-14: Lukáš asked whether a live interactive simulation is possible; a small in-browser kMC (clearly labelled as a simplified model) was offered as an optional addition to phase 3 — not decided, ask before building.
 
 ---
 
