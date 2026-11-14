@@ -10,13 +10,14 @@
 | Phase | State | Notes |
 |---|---|---|
 | 1 Foundation + design system + all pages (1a ⏸, 1b) | ✅ done 2026-11-14 | Subpages show static drawings (`VizGlyph.astro`) where phase 3 puts the visualizations; hero is a static SVG (`HeroScene.astro`, keep as WebGL fallback); CV links appear once `public/cv/*.pdf` exist; three/d3 not installed yet |
-| 2 Hero: live 3D Solar System | ⬜ todo | |
+| 2 Hero: live 3D Solar System | ✅ done 2026-11-14 | `SolarSystem.astro` + `src/scripts/solar-system.ts` (lazy three.js), math in `src/lib/ephemeris.ts`, acceptance checks `npm run check:ephemeris`. Wheel zoom only after a click on the scene (or Ctrl); touch drag rotates horizontally only; clock clamped to 1800–2050; comet shown ±6 yr around perihelion |
 | 3 Project visualizations (3a kMC ⏸, 3b rest) | ⬜ todo | |
 | 4 CV generator (YAML → 2 PDFs) + CI | ⬜ todo | |
 | 5 Polish, a11y, SEO, final review | ⬜ todo | |
 
 Feedback log (Lukáš's review comments that change the plan go here):
 - 2026-11-14: the deuteron internship was at the Institute of Physics (Fyzikální ústav AV ČR), not the Nuclear Physics Institute — fixed in `content/profile.yaml`.
+- 2026-11-14 (phase 2 review): from now on every phase must be self-checked in the browser with Claude in Chrome before the ⏸ message (protocol step 3); the earlier "no screenshots" rule is dropped.
 - 2026-11-14: Lukáš asked whether a live interactive simulation is possible; a small in-browser kMC (clearly labelled as a simplified model) was offered as an optional addition to phase 3 — not decided, ask before building.
 
 ---
@@ -24,8 +25,8 @@ Feedback log (Lukáš's review comments that change the plan go here):
 ## 0. Working protocol (read every session)
 
 1. **Start of session:** read `CLAUDE.md`, then this file's Status + the section of the current phase. Do not read other phases' sections in detail.
-2. **Dev server:** start `npm run dev -- --host` in the **background** (after phase 1 exists) and tell Lukáš the URL (`http://localhost:4321/…`). He reviews visually in his own browser while you work — you do **not** take screenshots.
-3. **End of phase:** `npm run build` must pass with zero errors. Then write ≤10 lines of what changed + exact URLs to look at, and end your message with:
+2. **Dev server:** start `npm run dev -- --host` in the **background** (after phase 1 exists) and tell Lukáš the URL (`http://localhost:4321/…`). He reviews visually in his own browser while you work.
+3. **End of phase:** `npm run build` must pass with zero errors. **Before ending a phase (or a ⏸ sub-phase checkpoint) you must check everything yourself with Claude in Chrome** (`mcp__claude-in-chrome__*`, new tab on the dev server): look at every page/feature the phase touched in EN and CS, at desktop and phone width, try the interactions, and read the console for errors. Fix what you find; report what you checked and anything you could not check. Then write ≤10 lines of what changed + exact URLs to look at, and end your message with:
    **`⏸ FÁZE N HOTOVÁ — zkontroluj prosím v prohlížeči a napiš OK nebo připomínky.`**
    Then STOP and wait.
 4. **After Lukáš's OK:** commit (conventional message), `git push`, update the Status table above (+ feedback log if the plan changed), commit that too. Then tell him: „Napiš `/clear` a pak: *Pokračuj fází N+1 podle PLAN.md*“.

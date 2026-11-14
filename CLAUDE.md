@@ -13,6 +13,7 @@ Static personal portfolio (Astro 5.18.2 + three.js + d3), deployed to GitHub Pag
 - Privacy: no phone, address or birth date anywhere; e-mail obfuscated.
 - Subagents: always `model: "opus"`, never `subagent_type: "fork"`.
 - Node is v20 → stay on Astro 5.x.
+- Before ending a phase, check everything yourself in the browser with Claude in Chrome (pages, interactions, console, desktop + phone width) — see PLAN.md §0 step 3.
 - One phase per session; stop with `⏸ FÁZE N HOTOVÁ …` and wait for Lukáš's OK before commit + push.
 - Talk to Lukáš in Czech; code, comments and commit messages in English.
 
