@@ -1,10 +1,10 @@
 ---
-import HeroScene from './HeroScene.astro';
+import SolarSystem from './SolarSystem.astro';
 import { useT, type Lang } from '../i18n/ui';
 import { cvUrl } from '../lib/cv';
 import { localPath } from '../lib/paths';
 import { profile } from '../lib/profile';
-import { loc } from '../lib/typo';
+import { czechTypo, loc } from '../lib/typo';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -15,11 +15,12 @@ const { person, links } = profile;
 const [role, ...fields] = loc(person.headline, lang).split(' · ');
 const github = links.find((l) => l.id === 'github');
 const cv = cvUrl(lang);
+const typo = (text: string) => (lang === 'cs' ? czechTypo(text) : text);
 ---
 
 <section class="hero" aria-labelledby="hero-name">
   <div id="hero-scene" class="hero__scene">
-    <HeroScene lang={lang} />
+    <SolarSystem lang={lang} />
   </div>
 
   <div class="container hero__content">
@@ -34,7 +35,10 @@ const cv = cvUrl(lang);
         {github && <a class="button button--quiet" href={github.url} rel="me">{github.label}</a>}
       </div>
     </div>
-    <p class="hero__caption">{t('hero.scenePending')}</p>
+    <p class="hero__caption">
+      {typo(t('hero.caption'))} {typo(t('hero.captionScale'))}
+      <a href={localPath(lang, '/projects/ephemerides/')}>{typo(t('hero.captionLink'))}</a>
+    </p>
   </div>
 </section>
 
