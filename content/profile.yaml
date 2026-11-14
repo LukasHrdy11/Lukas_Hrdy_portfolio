@@ -1,0 +1,313 @@
+# =====================================================================
+#  PROFILE — jediný zdroj pravdy pro WEB i CV (CZ + EN)
+#  Single source of truth for the WEBSITE and both CV PDFs.
+#
+#  Jak upravovat / How to edit:
+#   - Každý text má dvě verze:  cs: "česky"   en: "English"
+#   - Položky se zobrazují v tom pořadí, v jakém jsou tady.
+#   - `cv: false`  = položka jen na webu, ne v CV.
+#   - `web: false` = položka jen v CV, ne na webu.
+#   - Po změně: git add . && git commit -m "..." && git push
+#     → GitHub Actions automaticky postaví web i CV (cca 2 min).
+#   - Řádky začínající # jsou komentáře (nic nedělají).
+#   - TODO = něco, co ještě musí doplnit Lukáš.
+# =====================================================================
+
+person:
+  name: "Lukáš Hrdý"
+  email: "hrdylukas1111@gmail.com"     # na webu chráněno proti botům
+  photo: "/media/lukas-hrdy.jpg"
+  headline:
+    cs: "Student fyziky na MFF UK · výpočetní fyzika, astrofyzika a simulace"
+    en: "Physics student at Charles University · computational physics, astrophysics & simulations"
+  tagline:
+    cs: "Píšu simulace růstu krystalů, řeším Schrödingerovu rovnici numericky a ve volném čase učím lidi koukat na oblohu."
+    en: "I write crystal-growth simulations, solve the Schrödinger equation numerically, and in my free time teach people to look at the sky."
+
+links:
+  - { id: github,  label: "GitHub",  url: "https://github.com/LukasHrdy11" }
+  - { id: youtube, label: "YouTube – Kosmické okénko", url: "https://www.youtube.com/@kosmickeokenko" }
+  - { id: web,     label: "lukashrdy.cz", url: "https://lukashrdy.cz", web: false }   # jen v CV
+
+about:
+  cs: >-
+    Studuji fyziku na Matematicko-fyzikální fakultě Univerzity Karlovy. Baví mě místo,
+    kde se fyzika potkává s programováním: kinetické Monte Carlo simulace růstu tenkých
+    vrstev, numerické řešení kvantově mechanických úloh a zpracování astronomických dat.
+    Od střední školy jsem prošel stážemi na Astronomickém ústavu a Fyzikálním ústavu
+    AV ČR. K vědě patří i její sdílení: vedl jsem astronomický kroužek, natáčel
+    popularizační přednášky a každé léto jezdím jako vedoucí na astronomický tábor.
+  en: >-
+    I study physics at the Faculty of Mathematics and Physics, Charles University (Prague).
+    I enjoy the place where physics meets programming: kinetic Monte Carlo simulations of
+    thin-film growth, numerical solutions of quantum-mechanical problems, and astronomical
+    data processing. Since high school I have worked on research internships at the
+    Astronomical Institute and the Institute of Physics of the Czech Academy of Sciences.
+    Sharing science matters to me too: I ran an astronomy club, recorded public lectures,
+    and every summer I lead at an astronomy camp.
+
+interests:
+  - { cs: "Výpočetní fyzika a simulace", en: "Computational physics & simulations" }
+  - { cs: "Fyzika povrchů a tenkých vrstev", en: "Surface & thin-film physics" }
+  - { cs: "Astrofyzika a astročásticová fyzika", en: "Astrophysics & astroparticle physics" }
+  - { cs: "Kvantová mechanika", en: "Quantum mechanics" }
+  - { cs: "Strojové učení ve vědě", en: "Machine learning for science" }
+  - { cs: "Popularizace astronomie", en: "Astronomy outreach" }
+
+# ---------------------------------------------------------------------
+#  HLAVNÍ PROJEKTY (velké karty + vlastní podstránka /projects/<slug>)
+# ---------------------------------------------------------------------
+featured_projects:
+
+  - slug: kmc-sapphire
+    title:
+      cs: "Kinetické Monte Carlo: růst safíru"
+      en: "Kinetic Monte Carlo: sapphire growth"
+    period: "02/2026 – "
+    org:
+      cs: "Studentský fakultní grant (SFG), Katedra fyziky povrchů a plazmatu MFF UK"
+      en: "Student Faculty Grant (SFG), Dept. of Surface and Plasma Science, Charles University"
+    supervisor: "doc. RNDr. Pavel Kocán, Ph.D."
+    tags: [Python, Numba, kMC, "thin films", "PLD"]
+    summary:
+      cs: "Simulace růstu tenkých vrstev safíru (α-Al₂O₃) pulzní laserovou depozicí na úrovni jednotlivých atomů, včetně příměsí s laditelnými energiemi."
+      en: "Atom-by-atom simulation of sapphire (α-Al₂O₃) thin-film growth by pulsed laser deposition, including dopants with tunable energetics."
+    body:
+      cs:
+        - "Napsal jsem kinetickou Monte Carlo simulaci růstu safíru (korundu) při pulzní laserové depozici (PLD) na zkosené hexagonální mřížce s implicitní kyslíkovou podmřížkou. Simulace běží jako automatizovaná pipeline: simulace → strukturní vyhodnocení (koordinace, obsazenost) → grafy pokrytí v čase a 3D export."
+        - "Do modelu jsem implementoval i jiné kationty (dopanty), jejichž vazebné energie a difuzní bariéry lze ladit, takže je možné studovat, jak ovlivňují morfologii vrstvy, například zda se dopanty shlukují."
+        - "Simulace je napsaná v Pythonu (hlavní smyčky kompilované přes Numba) a v řádu hodin zvládne mřížky kolem 500 × 500 a tisíce vrstev."
+      en:
+        - "I wrote a kinetic Monte Carlo simulation of sapphire (corundum) growth by pulsed laser deposition (PLD) on a sheared hexagonal lattice with an implicit oxygen sublattice. It runs as an automated pipeline: simulation → structural evaluation (coordination, occupancy) → coverage-vs-time dashboards and 3D export."
+        - "I added other cations (dopants) whose binding energies and diffusion barriers can be tuned, so one can study how they change the film morphology, e.g. whether dopants cluster."
+        - "The code is Python (hot loops JIT-compiled with Numba) and handles grids of about 500 × 500 with thousands of layers within hours."
+    results:
+      - { cs: "Funkční kMC model růstu safíru s dopanty a laditelnými energiemi", en: "Working kMC model of sapphire growth with tunable dopant energetics" }
+      - { cs: "Velké běhy: ~500 × 500 mřížka, tisíce vrstev, jednotky hodin", en: "Large runs: ~500 × 500 grid, thousands of layers, a few hours" }
+      - { cs: "Trend: silnější Ehrlichova–Schwoebelova bariéra dopantu → dopanty se shlukují", en: "Trend: a stronger dopant Ehrlich–Schwoebel barrier → dopants cluster" }
+    caveat:
+      cs: "Energetické parametry zatím nejsou odvozené z DFT ani z měření (experimentální data zatím nejsou k dispozici), fyzikálně smysluplné jsou proto hlavně trendy, ne absolutní hodnoty."
+      en: "The energetic parameters are not yet derived from DFT or measurement (no experimental data available yet), so the trends are physically meaningful, not the absolute numbers."
+    visualization: kmc-crystal          # data: /data/kmc-t10-crystal.json
+    links: []                           # repozitář je soukromý
+    cv: true
+
+  - slug: deuteron
+    title:
+      cs: "Deuteron: numerické řešení vázaného stavu"
+      en: "The deuteron: numerical bound-state solution"
+    period: "01/2024 – 11/2024"
+    org:
+      cs: "Stáž Otevřená věda, Fyzikální ústav AV ČR"
+      en: "Open Science internship, Institute of Physics of the Czech Academy of Sciences"
+    supervisor: "Ing. Martin Schäfer, Ph.D."
+    tags: [Python, NumPy, SciPy, Numerov, "nuclear physics"]
+    award:
+      cs: "2. místo na konferenci Otevřené vědy 2024"
+      en: "2nd place, Open Science conference 2024"
+    summary:
+      cs: "Program, který popisuje deuteron jako vázaný stav protonu a neutronu se složkou s-vlny i d-vlny, a z vlnové funkce počítá jeho vlastnosti."
+      en: "A program describing the deuteron as a proton–neutron bound state with both s-wave and d-wave components, computing its properties from the wave function."
+    body:
+      cs:
+        - "Deuteron je nejjednodušší atomové jádro. Tenzorová složka jaderné síly v něm míchá s-vlnu (l = 0) a d-vlnu (l = 2), takže radiální Schrödingerova rovnice se stává soustavou dvou vázaných rovnic."
+        - "Napsal jsem maticovou Numerovovu metodu pro vázané kanály s realistickým potenciálem (centrální, tenzorová a spin-orbitální část). Vazebnou energii hledám podmínkou navázání řešení integrovaných zvenku a zevnitř, z normované vlnové funkce pak počítám další vlastnosti deuteronu."
+        - "Na stáži jsem metody použil i na fázové posuny nukleon-nukleonového rozptylu a na spektra kvarkonií (exotických mezonů)."
+      en:
+        - "The deuteron is the simplest nucleus. The tensor part of the nuclear force mixes the s-wave (l = 0) and the d-wave (l = 2), so the radial Schrödinger equation becomes two coupled equations."
+        - "I implemented a matrix Numerov method for coupled channels with a realistic potential (central, tensor and spin–orbit parts). The binding energy is found by matching the outward and inward solutions; the normalized wave function then gives further properties of the deuteron."
+        - "During the internship I also applied the methods to nucleon–nucleon scattering phase shifts and to quarkonium (exotic meson) spectra."
+    results:
+      - { cs: "Vazebná energie −2,23 MeV (experiment −2,2246 MeV)", en: "Binding energy −2.23 MeV (experiment −2.2246 MeV)" }
+      - { cs: "Vlnová funkce se složkami s- a d-vlny", en: "Wave function with s- and d-wave components" }
+      - { cs: "Pravděpodobnost d-stavu P_D ≈ 6,5 %", en: "D-state probability P_D ≈ 6.5 %" }
+      - { cs: "Poloměr (rms) ≈ 1,92 fm (experiment 1,97 fm), kvadrupólový moment Q ≈ 0,274 fm² (experiment 0,286 fm²)", en: "RMS radius ≈ 1.92 fm (experiment 1.97 fm), quadrupole moment Q ≈ 0.274 fm² (experiment 0.286 fm²)" }
+    visualization: deuteron-wavefunction   # data: /data/deuteron.json
+    links: []
+    cv: true
+
+  - slug: afm-stm
+    title:
+      cs: "Interaktivní simulace STM a FM-AFM"
+      en: "Interactive STM & FM-AFM simulation"
+    period: "09/2026"
+    org:
+      cs: "Letní studentský projekt KFPP 2026, MFF UK"
+      en: "KFPP Summer Student Project 2026, Charles University"
+    supervisor: "doc. RNDr. Pavel Kocán, Ph.D."
+    tags: [Python, Pyodide, JupyterLite, "control loops", "SPM"]
+    summary:
+      cs: "Výuková simulace zpětnovazební smyčky rastrovacího tunelového mikroskopu a mikroskopu atomárních sil, ovládaná posuvníky přímo v prohlížeči."
+      en: "A teaching simulation of the feedback loop of a scanning tunnelling microscope and an atomic force microscope, controlled with sliders directly in the browser."
+    body:
+      cs:
+        - "Simulace zpětnovazební smyčky STM (režim konstantního proudu) a frekvenčně modulovaného AFM (qPlus senzor). Místo úprav kódu se ovládá posuvníky: P / I / PI regulátor, různé povrchy, šum škálovaný z naměřených hodnot, režim konstantního proudu vs. konstantní výšky."
+        - "AFM část počítá sílu F(d) a posun frekvence Δf(d) se stabilní větví, rezonanci a fázi, včetně ztráty stability za minimem Δf. Kombinovaný režim STM + AFM s jedním oscilujícím vodivým hrotem."
+        - "Python běží přímo v prohlížeči (JupyterLite / Pyodide), rozhraní je česky i anglicky a ke každému parametru je uvedeno, odkud jeho hodnota pochází."
+      en:
+        - "A simulation of the feedback loop of an STM (constant-current mode) and a frequency-modulation AFM (qPlus sensor). Instead of editing code you use sliders: P / I / PI controller, different surfaces, noise scaled from measured values, constant-current vs. constant-height mode."
+        - "The AFM part computes the force F(d) and the frequency shift Δf(d) with the stable branch, resonance and phase, including the loss of stability beyond the Δf minimum. A combined STM + AFM mode uses one oscillating conducting tip."
+        - "Python runs directly in the browser (JupyterLite / Pyodide); the interface is in Czech and English and every parameter states where its value comes from."
+    results:
+      - { cs: "Veřejné interaktivní demo běžící v prohlížeči", en: "Public interactive demo running in the browser" }
+      - { cs: "Testy ověřující fyziku i shodu panelů s dávkovými skripty", en: "Tests checking the physics and that the panels match the batch scripts" }
+    visualization: stm-tip-animation
+    links:
+      - { label: { cs: "Spustit demo", en: "Launch the demo" }, url: "https://lukashrdy11.github.io/afm-stm-demo/", primary: true }
+      - { label: { cs: "Zdrojový kód", en: "Source code" }, url: "https://github.com/LukasHrdy11/afm-stm-demo" }
+    cv: true
+
+  - slug: ephemerides
+    title:
+      cs: "Výpočet poloh nebeských těles"
+      en: "Computing positions of celestial bodies"
+    period: "09/2022 – 06/2023"
+    org:
+      cs: "Středoškolská odborná činnost (obor fyzika), Hvězdárna Zlín"
+      en: "Secondary-school research competition SOČ (physics), Zlín Observatory"
+    supervisor: "Ing. Vratislav Zíka"
+    tags: ["celestial mechanics", "Kepler's equation", "Pascal"]
+    award:
+      cs: "3. místo v SOČ, obor fyzika (2023)"
+      en: "3rd place, SOČ physics (2023)"
+    summary:
+      cs: "Vlastní program pro predikci poloh planet a komet z dráhových elementů, včetně parabolických a hyperbolických drah."
+      en: "My own program predicting positions of planets and comets from orbital elements, including parabolic and hyperbolic orbits."
+    body:
+      cs:
+        - "Program z dráhových elementů řeší Keplerovu rovnici a počítá efemeridy: rektascenzi, deklinaci, vzdálenosti od Země a Slunce a elongaci. Zvládá eliptické, parabolické i hyperbolické dráhy, třeba kometu C/2017 K2 (PANSTARRS)."
+        - "Interaktivní Sluneční soustava v úvodu tohoto webu počítá polohy planet stejným principem a kometa C/2017 K2 v ní letí po dráze z mých vstupních dat."
+      en:
+        - "From orbital elements the program solves Kepler's equation and computes ephemerides: right ascension, declination, distances from Earth and Sun, and elongation. It handles elliptic, parabolic and hyperbolic orbits, e.g. comet C/2017 K2 (PANSTARRS)."
+        - "The interactive Solar System at the top of this site computes planetary positions on the same principle, and comet C/2017 K2 flies along the orbit from my input data."
+    results:
+      - { cs: "3. místo v SOČ (fyzika)", en: "3rd place in SOČ (physics)" }
+      - { cs: "Eliptické, parabolické i hyperbolické dráhy", en: "Elliptic, parabolic and hyperbolic orbits" }
+    visualization: hero-solar-system     # odkaz na úvodní 3D vizualizaci
+    links:
+      - { label: { cs: "Stáhnout práci SOČ (PDF, česky)", en: "Download the SOČ thesis (PDF, Czech)" }, url: "/media/soc-vypocet-poloh-nebeskych-teles.pdf", primary: true }
+    cv: true
+
+# ---------------------------------------------------------------------
+#  OSTATNÍ PROJEKTY (menší karty, bez podstránky)
+# ---------------------------------------------------------------------
+other_projects:
+
+  - slug: sst1m
+    title:
+      cs: "Rekonstrukce směru příletu gama spršek (SST-1M)"
+      en: "Arrival-direction reconstruction of gamma-ray showers (SST-1M)"
+    period: "11/2023 – 01/2025"
+    org: { cs: "Astronomický ústav AV ČR", en: "Astronomical Institute of the Czech Academy of Sciences" }
+    supervisor: "Ing. Mgr. Jakub Juryšek, Ph.D."
+    tags: [Python, "scikit-learn", "Random Forest", "Cherenkov telescopes"]
+    summary:
+      cs: "Optimalizace rekonstrukce polohy zdroje pro Čerenkovovy teleskopy SST-1M metodou DISP: modely Random Forest pro velikost a znaménko vektoru DISP, natrénované na Monte Carlo simulacích spršek."
+      en: "Optimizing source-position reconstruction for the SST-1M Cherenkov telescopes with the DISP method: Random Forest models for the DISP norm and sign, trained on Monte Carlo shower simulations."
+    image: { src: "/media/sst1m-angular-resolution.jpg", alt: { cs: "Úhlové rozlišení v závislosti na energii: natrénovaný model vs. analytický model, s řezem na disp_sign", en: "Angular resolution vs. energy: trained model vs. analytic model, with disp_sign cut" } }
+    cv: true
+
+  - slug: variable-stars-atlas
+    title:
+      cs: "Fotometrický atlas proměnných hvězd"
+      en: "Photometric atlas of variable stars"
+    period: "01/2023 – 11/2023"
+    org: { cs: "Stáž Otevřená věda, Astronomický ústav AV ČR", en: "Open Science internship, Astronomical Institute of the Czech Academy of Sciences" }
+    supervisor: "Mgr. Jan Štrobl"
+    tags: ["photometry", "variable stars"]
+    summary:
+      cs: "Tvorba fotometrického atlasu proměnných hvězd."
+      en: "Building a photometric atlas of variable stars."
+    cv: true
+
+  - slug: starchip
+    title:
+      cs: "AI asistent pro kvantovou fyziku"
+      en: "AI assistant for quantum physics"
+    period: "2025"
+    org: { cs: "Osobní projekt", en: "Personal project" }
+    tags: [PyTorch, Transformers, "RAG", "QLoRA", "Mistral-7B"]
+    summary:
+      cs: "Destilace znalostí z RAG systému nad vědeckými články do jazykového modelu Mistral-7B: RAG „učitel“ generuje syntetický dataset otázek a odpovědí, na kterém se model doladí metodou QLoRA."
+      en: "Distilling knowledge from a RAG system over scientific papers into a Mistral-7B language model: a RAG “teacher” generates a synthetic Q&A dataset used to fine-tune the model with QLoRA."
+    cv: true
+
+  - slug: clinical-ai
+    title:
+      cs: "Software pro klinickou praxi"
+      en: "Software for clinical practice"
+    period: "2026"
+    org: { cs: "Rakathon 2026 a spolupráce s lékaři", en: "Rakathon 2026 and collaboration with physicians" }
+    tags: ["AI", "healthcare", "local LLMs"]
+    summary:
+      cs: "Zkušenosti s vývojem AI softwaru pro nasazení v medicíně, s důrazem na ochranu dat pacientů a lokální běh modelů. Účast na hackathonu Rakathon 2026."
+      en: "Experience developing AI software for deployment in medicine, with an emphasis on patient-data protection and running models locally. Participant in the Rakathon 2026 hackathon."
+    cv: true
+
+# ---------------------------------------------------------------------
+#  ZKUŠENOSTI (časová osa) — vědecké zkušenosti z CV
+# ---------------------------------------------------------------------
+experience:
+  - { period: "02/2026 – ", title: { cs: "Kinetické Monte Carlo simulace růstu safíru (SFG)", en: "Kinetic Monte Carlo simulation of sapphire growth (SFG grant)" }, org: { cs: "KFPP MFF UK", en: "Dept. of Surface and Plasma Science, Charles University" }, supervisor: "doc. RNDr. Pavel Kocán, Ph.D.", project: kmc-sapphire }
+  - { period: "09/2026", title: { cs: "Simulace zpětné vazby STM a FM-AFM", en: "STM & FM-AFM feedback-loop simulation" }, org: { cs: "Letní studentský projekt KFPP 2026", en: "KFPP Summer Student Project 2026" }, supervisor: "doc. RNDr. Pavel Kocán, Ph.D.", project: afm-stm }
+  - { period: "11/2023 – 01/2025", title: { cs: "Optimalizace rekonstrukce pozice příletu gama spršek", en: "Optimizing arrival-position reconstruction of gamma-ray showers" }, org: { cs: "Astronomický ústav AV ČR", en: "Astronomical Institute, Czech Academy of Sciences" }, supervisor: "Ing. Mgr. Jakub Juryšek, Ph.D.", project: sst1m }
+  - { period: "01/2024 – 11/2024", title: { cs: "Vývoj numerických metod pro kvantově mechanické systémy", en: "Numerical methods for quantum-mechanical systems" }, org: { cs: "Stáž Otevřená věda, Fyzikální ústav AV ČR", en: "Open Science internship, Institute of Physics, Czech Academy of Sciences" }, supervisor: "Ing. Martin Schäfer, Ph.D.", project: deuteron }
+  - { period: "2022 – 2024", title: { cs: "Aktivní účast na mezinárodních workshopech IWAA", en: "Active participation in IWAA international workshops" }, org: { cs: "International Workshop on Astronomy and Astrophysics", en: "International Workshop on Astronomy and Astrophysics" } }
+  - { period: "01/2023 – 11/2023", title: { cs: "Tvorba fotometrického atlasu proměnných hvězd", en: "Photometric atlas of variable stars" }, org: { cs: "Stáž Otevřená věda, Astronomický ústav AV ČR", en: "Open Science internship, Astronomical Institute, Czech Academy of Sciences" }, supervisor: "Mgr. Jan Štrobl", project: variable-stars-atlas }
+  - { period: "09/2022 – 06/2023", title: { cs: "Vývoj programu pro predikci poloh nebeských těles", en: "Program for predicting positions of celestial bodies" }, org: { cs: "SOČ – fyzika, Hvězdárna Zlín", en: "SOČ – physics, Zlín Observatory" }, supervisor: "Ing. Vratislav Zíka", project: ephemerides }
+  - { period: "02/2023", title: { cs: "Týdenní praktikum na TU Chemnitz (Fyzikální technologie)", en: "One-week practical course at TU Chemnitz (Physical technologies)" }, org: { cs: "Technische Universität Chemnitz, Německo", en: "Technische Universität Chemnitz, Germany" } }
+  - { period: "08/2022", title: { cs: "Fotometrie proměnných hvězd pomocí CCD kamery", en: "CCD photometry of variable stars" }, org: { cs: "Praktikum, Valašské Meziříčí", en: "Observing practicum, Valašské Meziříčí" } }
+
+education:
+  - { period: "2025 – ", title: { cs: "Matematicko-fyzikální fakulta Univerzity Karlovy – obor Fyzika", en: "Faculty of Mathematics and Physics, Charles University – Physics (Bc.)" } }
+  - { period: "2017 – 2025", title: { cs: "Gymnázium Zlín – Lesní čtvrť", en: "Gymnázium Zlín – Lesní čtvrť (grammar school)" } }
+  - { period: "06/2022", title: { cs: "Astronomický kurz Planetum – základy moderní astronomie a astrofyziky, Štefánikova hvězdárna, Praha", en: "Planetum astronomy course – foundations of modern astronomy & astrophysics, Štefánik Observatory, Prague" } }
+
+awards:
+  - { date: "11/2024", title: { cs: "Konference Otevřené vědy: 2. místo", en: "Open Science conference: 2nd place" }, detail: { cs: "Kvantová mechanika ve studiu jader a exotických mezonů", en: "Quantum mechanics in the study of nuclei and exotic mesons" } }
+  - { date: "06/2024", title: { cs: "Ocenění Zlínského kraje nadaným studentům", en: "Zlín Region award for gifted students" } }
+  - { date: "06/2023", title: { cs: "Středoškolská odborná činnost – fyzika: 3. místo", en: "SOČ (student research competition) – physics: 3rd place" }, detail: { cs: "Výpočet poloh nebeských těles", en: "Computing positions of celestial bodies" } }
+  - { date: "06/2023", title: { cs: "Fyzikální korespondenční seminář MFF UK: 2. místo", en: "Physics correspondence seminar (FYKOS), Charles University: 2nd place" } }
+  - { date: "2022 – 2024", title: { cs: "Astronomická olympiáda", en: "Czech Astronomy Olympiad" }, detail: { cs: "6. místo (2024, kat. AB), 2. místo (2023, kat. CD), 8. místo (2022, kat. CD)", en: "6th (2024, cat. AB), 2nd (2023, cat. CD), 8th (2022, cat. CD)" } }
+  - { date: "04/2023", title: { cs: "Bystré hlavy Goethe-Institutu", en: "Goethe-Institut “Bystré hlavy” competition" }, detail: { cs: "Výhra dvoutýdenního jazykového pobytu v Obertauern, Rakousko", en: "Won a two-week language stay in Obertauern, Austria" } }
+
+# ---------------------------------------------------------------------
+#  POPULARIZACE
+# ---------------------------------------------------------------------
+outreach:
+  items:
+    - { period: "03/2024 – ", title: { cs: "YouTube kanál Kosmické okénko – Lukáš Hrdý", en: "YouTube channel “Kosmické okénko – Lukáš Hrdý”" }, detail: { cs: "Popularizační přednášky pro veřejnost (Hvězdárna Zlín)", en: "Public popular-science lectures (Zlín Observatory)" } }
+    - { period: "2024 – ", title: { cs: "Vedoucí na astronomickém táboře Hvězdárny Zlín (každé léto)", en: "Leader at the Zlín Observatory astronomy camp (every summer)" }, detail: { cs: "Mimo jiné s dětmi pozorujeme proměnné hvězdy a zpracováváme jejich světelné křivky.", en: "Among other things, we observe variable stars with the kids and reduce their light curves." } }
+    - { period: "2021 – 2025", title: { cs: "Vedení astronomického kroužku (Hvězdárna Zlín)", en: "Running the astronomy club (Zlín Observatory)" }, detail: { cs: "Začátečnický a pokročilý kurz, víkendové akce", en: "Beginner and advanced courses, weekend events" } }
+    - { period: "2024 – ", title: { cs: "Člen výboru Zlínské astronomické společnosti", en: "Board member, Zlín Astronomical Society" } }
+    - { period: "2024", title: { cs: "Prezentace na akci Zvaž vědu! (Brno)", en: "Talk at “Zvaž vědu!” (Brno)" }, detail: { cs: "SOČ, Astronomická olympiáda a Otevřená věda", en: "SOČ, the Astronomy Olympiad and Open Science" } }
+  videos:
+    # youtube_id = 11 znaků z adresy youtube.com/watch?v=XXXXXXXXXXX
+    - { title: "Černé díry", youtube_id: "TY1Vo4Q_p3Y" }
+    - { title: "Novinky v astronomii a fyzice za rok 2025", youtube_id: "0Ul1NaCgEdI" }
+  astrocamp_lightcurve:
+    data: "/data/light-curves.json"
+    show: drak          # FU Dra, noc 2.–3. 7. 2025
+    caption:
+      cs: "Světelná křivka zákrytové dvojhvězdy FU Dra naměřená na astrotáboře Hvězdárny Zlín v noci 2.–3. 7. 2025 (diferenciální fotometrie)."
+      en: "Light curve of the eclipsing binary FU Dra measured at the Zlín Observatory astronomy camp on the night of 2–3 July 2025 (differential photometry)."
+
+# ---------------------------------------------------------------------
+#  DOVEDNOSTI A JAZYKY
+# ---------------------------------------------------------------------
+skills:
+  - { area: { cs: "Programování", en: "Programming" }, items: "Python (NumPy, SciPy, Numba, pandas, matplotlib), C#, Pascal" }
+  - { area: { cs: "Strojové učení", en: "Machine learning" }, items: "scikit-learn (Random Forest), PyTorch, Hugging Face Transformers, PEFT/QLoRA, RAG" }
+  - { area: { cs: "Nástroje", en: "Tools" }, items: "Git, Linux, HPC / Slurm, LaTeX, Jupyter" }
+  - { area: { cs: "Astro data", en: "Astro data" }, items: { cs: "Zpracování astronomických dat (fotometrie, spektroskopie)", en: "Astronomical data processing (photometry, spectroscopy)" } }
+  - { area: { cs: "Video", en: "Video" }, items: { cs: "Střih videí a vedení YouTube kanálu", en: "Video editing and running a YouTube channel" } }
+
+languages:
+  - { name: { cs: "Čeština", en: "Czech" }, level: { cs: "rodilý mluvčí", en: "native" } }
+  - { name: { cs: "Angličtina", en: "English" }, level: { cs: "C1 (certifikát CAE)", en: "C1 (CAE certificate)" } }
+  - { name: { cs: "Němčina", en: "German" }, level: { cs: "C1 (certifikát DSD II)", en: "C1 (DSD II certificate)" } }
+
+language_stays:
+  - { cs: "Erasmus – dvoutýdenní pobyt na německém gymnáziu v Marienbergu (2023)", en: "Erasmus – two-week stay at a German grammar school in Marienberg (2023)" }
+  - { cs: "Schnupperwoche TU Chemnitz – seznamovací týden na univerzitě", en: "Schnupperwoche at TU Chemnitz – university orientation week" }
+  - { cs: "Schnupperwoche Hochschule Osnabrück – seznamovací týden na vysoké škole", en: "Schnupperwoche at Hochschule Osnabrück – university orientation week" }

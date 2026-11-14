@@ -1,0 +1,51 @@
+---
+import { LANGS, useT, type Lang } from '../i18n/ui';
+import { localPath, neutralPath } from '../lib/paths';
+
+interface Props { lang: Lang; page?: string }
+const { lang, page: pageOverride } = Astro.props;
+const t = useT(lang);
+const page = pageOverride ?? neutralPath(Astro.url.pathname);
+---
+
+<ul class="lang" aria-label={t('lang.switch')}>
+  {
+    LANGS.map((l) => (
+      <li>
+        <a
+          href={localPath(l, page)}
+          hreflang={l}
+          lang={l}
+          aria-current={l === lang ? 'true' : undefined}
+          aria-label={t(`lang.${l}`)}
+        >
+          {l}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .lang {
+    display: flex;
+    border: 1px solid var(--c-line-strong);
+    border-radius: var(--r-sm);
+    font-family: var(--f-mono);
+    font-size: var(--t-xs);
+  }
+  .lang a {
+    display: grid;
+    place-items: center;
+    min-width: 2.5rem;
+    min-height: 2rem;
+    color: var(--c-dim);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .lang a:hover { color: var(--c-star); }
+  .lang a[aria-current] {
+    background: var(--c-line);
+    color: var(--c-star);
+  }
+</style>

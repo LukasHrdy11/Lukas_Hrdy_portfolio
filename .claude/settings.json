@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./Premke_rakathon/**)",
+      "Read(./Osteo_agent/**)",
+      "Read(./Starchip/**)",
+      "Read(./SST1M/**)",
+      "Read(./OV-2024-/**)",
+      "Read(./Efemeridy/**)",
+      "Read(./světelné křivky/**)",
+      "Read(./hocs_lattice.html)",
+      "Read(./CV.tex)",
+      "Bash(git push --force:*)"
+    ]
+  }
+}

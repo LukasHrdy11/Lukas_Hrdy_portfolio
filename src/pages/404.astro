@@ -1,0 +1,26 @@
+---
+// One 404 page for the whole site (GitHub Pages serves /404.html), so it speaks both languages.
+import Base from '../layouts/Base.astro';
+import { ui } from '../i18n/ui';
+import { localPath } from '../lib/paths';
+---
+
+<Base lang="en" title={ui.en['notfound.title']} page="/" noindex>
+  <div class="container notfound">
+    <p class="mono notfound__code">404</p>
+    <h1>{ui.en['notfound.title']}</h1>
+    <p>{ui.en['notfound.text']} <a href={localPath('en')}>{ui.en['notfound.home']}</a>.</p>
+    <div lang="cs">
+      <h2>{ui.cs['notfound.title']}</h2>
+      <p>{ui.cs['notfound.text']} <a href={localPath('cs')}>{ui.cs['notfound.home']}</a>.</p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .notfound { padding-block: var(--s-9); display: grid; gap: var(--s-4); max-width: calc(44rem + 2 * var(--gutter)); }
+  .notfound__code { color: var(--c-amber); }
+  .notfound h1 { font-size: clamp(2.25rem, 1.5rem + 3.2vw, 3.5rem); font-weight: 300; }
+  .notfound h2 { margin-top: var(--s-6); font-size: var(--t-h2); }
+  .notfound p { color: var(--c-dim); }
+</style>

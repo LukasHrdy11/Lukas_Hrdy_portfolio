@@ -1,0 +1,73 @@
+---
+import '@fontsource-variable/newsreader/opsz.css';
+import '@fontsource-variable/newsreader/opsz-italic.css';
+import '@fontsource/ibm-plex-sans/latin-400.css';
+import '@fontsource/ibm-plex-sans/latin-ext-400.css';
+import '@fontsource/ibm-plex-sans/latin-500.css';
+import '@fontsource/ibm-plex-sans/latin-ext-500.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-ext-400.css';
+import '../styles/global.css';
+
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { LANGS, useT, type Lang } from '../i18n/ui';
+import { localPath, neutralPath } from '../lib/paths';
+import { profile } from '../lib/profile';
+import { loc } from '../lib/typo';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** Language-neutral path used for the language switch; set when the page has no translation twin. */
+  page?: string;
+  noindex?: boolean;
+}
+
+const { lang, title, description, page: pageOverride, noindex = false } = Astro.props;
+const t = useT(lang);
+const name = profile.person.name;
+const pageTitle = title ? `${title} — ${name}` : name;
+const pageDescription = description ?? loc(profile.person.tagline, lang);
+const page = pageOverride ?? neutralPath(Astro.url.pathname);
+const absolute = (l: Lang) => new URL(localPath(l, page), Astro.site).href;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <meta name="theme-color" content="#070b14" />
+    {noindex && <meta name="robots" content="noindex" />}
+    {!noindex && <link rel="canonical" href={absolute(lang)} />}
+    {!noindex && LANGS.map((l) => <link rel="alternate" hreflang={l} href={absolute(l)} />)}
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <a class="skip" href="#main">{t('nav.skip')}</a>
+    <Header lang={lang} page={pageOverride} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer lang={lang} page={pageOverride} />
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: absolute;
+    left: var(--gutter);
+    top: -4rem;
+    z-index: 100;
+    padding: var(--s-2) var(--s-4);
+    background: var(--c-ice);
+    color: var(--c-night);
+    border-radius: var(--r-sm);
+    text-decoration: none;
+  }
+  .skip:focus { top: var(--s-2); }
+</style>

@@ -1,0 +1,16 @@
+---
+import ProjectPage from '../../../components/ProjectPage.astro';
+import { onWeb, profile, type FeaturedProject } from '../../../lib/profile';
+
+export function getStaticPaths() {
+  return onWeb(profile.featured_projects).map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+interface Props { project: FeaturedProject }
+const { project } = Astro.props;
+---
+
+<ProjectPage lang="cs" project={project} />

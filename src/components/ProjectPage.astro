@@ -1,0 +1,169 @@
+---
+import Base from '../layouts/Base.astro';
+import VizGlyph from './VizGlyph.astro';
+import { useT, type Lang } from '../i18n/ui';
+import { localPath, withBase } from '../lib/paths';
+import type { FeaturedProject } from '../lib/profile';
+import { loc } from '../lib/typo';
+
+interface Props { lang: Lang; project: FeaturedProject }
+const { lang, project: p } = Astro.props;
+const t = useT(lang);
+const body = p.body[lang].map((text) => loc(text, lang));
+const links = p.links ?? [];
+---
+
+<Base lang={lang} title={loc(p.title, lang)} description={loc(p.summary, lang)}>
+  <article class="container project">
+    <p class="project__back"><a href={`${localPath(lang)}#projects`}>{t('project.back')}</a></p>
+
+    <header class="project__head">
+      <h1>{loc(p.title, lang)}</h1>
+      <p class="project__summary">{loc(p.summary, lang)}</p>
+      {p.award && <p class="project__award">{loc(p.award, lang)}</p>}
+      <dl class="project__facts">
+        <div><dt>{t('project.org')}</dt><dd>{loc(p.org, lang)}</dd></div>
+        {p.supervisor && <div><dt>{t('project.supervisor')}</dt><dd>{p.supervisor}</dd></div>}
+        <div><dt>{t('project.period')}</dt><dd class="mono">{p.period.trim()}</dd></div>
+      </dl>
+    </header>
+
+    <div class="project__body">
+      {body.map((text) => <p>{text}</p>)}
+    </div>
+
+    <!-- Phase 3 replaces this drawing with the interactive visualization. -->
+    <figure class="project__viz" data-viz={p.visualization}>
+      <VizGlyph kind={p.visualization} />
+    </figure>
+
+    <section class="project__results" aria-labelledby="results-title">
+      <h2 id="results-title">{t('project.results')}</h2>
+      <ul>
+        {p.results.map((r) => <li>{loc(r, lang)}</li>)}
+      </ul>
+    </section>
+
+    {
+      p.caveat && (
+        <aside class="project__caveat" aria-labelledby="caveat-title">
+          <h2 id="caveat-title">{t('project.caveat')}</h2>
+          <p>{loc(p.caveat, lang)}</p>
+        </aside>
+      )
+    }
+
+    {
+      links.length > 0 && (
+        <ul class="project__links" aria-label={t('project.links')}>
+          {links.map((link) => (
+            <li>
+              <a class:list={['button', { 'button--quiet': !link.primary }]} href={withBase(link.url)}>
+                {loc(link.label, lang)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <ul class="tags" aria-hidden="true">
+      {p.tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+  </article>
+</Base>
+
+<style>
+  .project {
+    max-width: calc(52rem + 2 * var(--gutter));
+    padding-block: var(--s-7) var(--s-9);
+  }
+  .project > * + * { margin-top: var(--s-7); }
+  .project__back { font-size: var(--t-sm); }
+  .project__back a { color: var(--c-dim); }
+  .project__back a:hover { color: var(--c-ice); }
+
+  .project__head { margin-top: var(--s-5); }
+  .project__head h1 {
+    font-size: clamp(2.25rem, 1.5rem + 3.2vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+  .project__summary {
+    max-width: var(--measure);
+    margin-top: var(--s-5);
+    font-family: var(--f-display);
+    font-size: 1.3125rem;
+    font-style: italic;
+    line-height: 1.45;
+  }
+  .project__award {
+    display: inline-block;
+    margin-top: var(--s-5);
+    padding: 0.3rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--c-amber) 60%, transparent);
+    border-radius: var(--r-sm);
+    color: var(--c-amber);
+    font-size: var(--t-sm);
+    line-height: 1.4;
+  }
+  .project__facts {
+    display: grid;
+    gap: var(--s-3);
+    margin: var(--s-6) 0 0;
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--c-line);
+    font-size: var(--t-sm);
+  }
+  .project__facts div { display: grid; gap: 0 var(--s-5); }
+  .project__facts dt { color: var(--c-dim); }
+  .project__facts dd { margin: 0; }
+  @media (min-width: 36rem) {
+    .project__facts div { grid-template-columns: 8rem minmax(0, 1fr); }
+  }
+
+  .project__body { display: grid; gap: var(--s-4); max-width: var(--measure); }
+
+  .project__viz {
+    margin-inline: 0;
+    padding: var(--s-5);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-md);
+    background: var(--c-deep);
+  }
+
+  .project__results h2,
+  .project__caveat h2 { font-size: var(--t-h3); }
+  .project__results ul { display: grid; gap: var(--s-3); margin-top: var(--s-4); max-width: var(--measure); }
+  .project__results li { padding-left: var(--s-5); position: relative; }
+  .project__results li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.8em;
+    width: 0.75rem;
+    height: 1px;
+    background: var(--c-ice);
+  }
+
+  .project__caveat {
+    max-width: var(--measure);
+    padding: var(--s-4) var(--s-5);
+    border-left: 2px solid var(--c-amber);
+    background: color-mix(in srgb, var(--c-amber) 7%, transparent);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  }
+  .project__caveat h2 { font-family: var(--f-text); font-size: var(--t-sm); font-weight: 500; color: var(--c-amber); }
+  .project__caveat p { margin-top: var(--s-2); }
+
+  .project__links { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--s-4);
+    font-family: var(--f-mono);
+    font-size: var(--t-xs);
+    color: var(--c-dim);
+  }
+</style>

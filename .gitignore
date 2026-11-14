@@ -1,0 +1,34 @@
+# ALLOWLIST: ignore everything at the root, then re-include only the website.
+# Project folders, CV.tex, raw photo, hocs_lattice.html etc. never enter git.
+/*
+# reference/ = local-only inputs for Fable (code from the private kMC repo) — intentionally NOT committed
+!/.gitignore
+!/.github/
+!/.claude/
+!/content/
+!/docs/
+!/src/
+!/public/
+!/cv/
+!/scripts/
+!/PLAN.md
+!/CLAUDE.md
+!/README.md
+!/package.json
+!/package-lock.json
+!/astro.config.mjs
+!/tsconfig.json
+
+# Never commit, even inside allowed folders
+node_modules/
+dist/
+.astro/
+cv/build/
+public/cv/
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+.DS_Store
+.claude/settings.local.json

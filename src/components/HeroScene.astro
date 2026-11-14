@@ -1,0 +1,96 @@
+---
+// Static stand-in for the live 3D Solar System (PLAN.md §6.1, phase 2).
+// Later it stays as the fallback when WebGL is unavailable.
+import { useT, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const t = useT(Astro.props.lang);
+
+// Deterministic starfield (mulberry32) so every build renders the same sky.
+function prng(seed: number) {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let x = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rand = prng(1798);
+const W = 1600;
+const H = 900;
+const stars = Array.from({ length: 170 }, () => {
+  const m = rand();
+  return {
+    x: +(rand() * W).toFixed(1),
+    y: +(rand() * H).toFixed(1),
+    r: +(0.4 + m * m * 1.3).toFixed(2),
+    o: +(0.25 + rand() * 0.6).toFixed(2),
+  };
+});
+
+// Schematic only: eight orbits seen from above the ecliptic at an angle.
+const sun = { x: 1040, y: 430 };
+const tilt = 0.36;
+const orbits = [58, 92, 128, 170, 262, 352, 440, 530];
+const phases = [0.6, 2.3, 4.1, 5.2, 1.2, 3.4, 0.1, 2.8];
+const planets = orbits.map((a, i) => ({
+  x: +(sun.x + a * Math.cos(phases[i])).toFixed(1),
+  y: +(sun.y + a * tilt * Math.sin(phases[i])).toFixed(1),
+  r: i === 4 || i === 5 ? 4.2 : i > 5 ? 3.2 : 2.4,
+}));
+---
+
+<svg
+  class="scene"
+  viewBox={`0 0 ${W} ${H}`}
+  preserveAspectRatio="xMidYMid slice"
+  role="img"
+  aria-label={t('hero.sceneAlt')}
+>
+  <defs>
+    <radialGradient id="sun-glow">
+      <stop offset="0" stop-color="#f2b25c" stop-opacity="0.55"></stop>
+      <stop offset="0.35" stop-color="#f2b25c" stop-opacity="0.12"></stop>
+      <stop offset="1" stop-color="#f2b25c" stop-opacity="0"></stop>
+    </radialGradient>
+    <linearGradient id="comet-tail" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f2b25c" stop-opacity="0.75"></stop>
+      <stop offset="1" stop-color="#f2b25c" stop-opacity="0"></stop>
+    </linearGradient>
+  </defs>
+
+  <g fill="#e7ecf5">
+    {stars.map((s) => <circle cx={s.x} cy={s.y} r={s.r} opacity={s.o} />)}
+  </g>
+
+  <g transform={`rotate(-14 ${sun.x} ${sun.y})`}>
+    <g fill="none" stroke="#8fd3ff" stroke-width="1" opacity="0.32">
+      {orbits.map((a) => <ellipse cx={sun.x} cy={sun.y} rx={a} ry={+(a * tilt).toFixed(1)} />)}
+    </g>
+    <!-- comet on an open orbit, tail pointing away from the Sun -->
+    <path
+      d={`M ${sun.x - 620} ${sun.y - 330} Q ${sun.x + 60} ${sun.y - 20} ${sun.x - 330} ${sun.y + 420}`}
+      fill="none"
+      stroke="#f2b25c"
+      stroke-width="1"
+      stroke-dasharray="2 7"
+      opacity="0.5"
+    ></path>
+    <g transform={`translate(${sun.x - 398} ${sun.y - 218}) rotate(207)`}>
+      <rect x="0" y="-1.5" width="60" height="3" fill="url(#comet-tail)"></rect>
+      <circle r="3" fill="#f2b25c"></circle>
+    </g>
+    <circle cx={sun.x} cy={sun.y} r="110" fill="url(#sun-glow)"></circle>
+    <circle cx={sun.x} cy={sun.y} r="9" fill="#f7c987"></circle>
+    <g fill="#cfe9fb">
+      {planets.map((p) => <circle cx={p.x} cy={p.y} r={p.r} />)}
+    </g>
+  </g>
+</svg>
+
+<style>
+  .scene {
+    width: 100%;
+    height: 100%;
+  }
+</style>

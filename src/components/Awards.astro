@@ -1,0 +1,20 @@
+---
+import Section from './Section.astro';
+import EntryList from './EntryList.astro';
+import { useT, type Lang } from '../i18n/ui';
+import { onWeb, profile } from '../lib/profile';
+import { loc } from '../lib/typo';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const entries = onWeb(profile.awards).map((a) => ({
+  when: a.date,
+  title: loc(a.title, lang),
+  lines: [loc(a.detail, lang)],
+}));
+---
+
+<Section id="awards" title={t('awards.title')}>
+  <EntryList entries={entries} />
+</Section>

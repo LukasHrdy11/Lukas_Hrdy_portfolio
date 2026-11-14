@@ -1,0 +1,129 @@
+---
+import HeroScene from './HeroScene.astro';
+import { useT, type Lang } from '../i18n/ui';
+import { cvUrl } from '../lib/cv';
+import { localPath } from '../lib/paths';
+import { profile } from '../lib/profile';
+import { loc } from '../lib/typo';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const { person, links } = profile;
+
+// "Role · fields" in the YAML → the role and the fields on separate lines.
+const [role, ...fields] = loc(person.headline, lang).split(' · ');
+const github = links.find((l) => l.id === 'github');
+const cv = cvUrl(lang);
+---
+
+<section class="hero" aria-labelledby="hero-name">
+  <div id="hero-scene" class="hero__scene">
+    <HeroScene lang={lang} />
+  </div>
+
+  <div class="container hero__content">
+    <div class="hero__text">
+      <h1 id="hero-name" class="hero__name">{person.name}</h1>
+      <p class="hero__role">{role}</p>
+      {fields.length > 0 && <p class="hero__fields">{fields.join(', ')}</p>}
+      <p class="hero__tagline">{loc(person.tagline, lang)}</p>
+      <div class="hero__actions">
+        <a class="button" href={`${localPath(lang)}#projects`}>{t('hero.projects')}</a>
+        {cv && <a class="button button--quiet" href={cv}>{t('hero.cv')}</a>}
+        {github && <a class="button button--quiet" href={github.url} rel="me">{github.label}</a>}
+      </div>
+    </div>
+    <p class="hero__caption">{t('hero.scenePending')}</p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 70% 45%, #0f1a30 0%, transparent 60%),
+      var(--c-night);
+  }
+
+  /* Phones: text first, the sky below it. */
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    padding-block: var(--s-7) var(--s-5);
+  }
+  .hero__scene {
+    order: 2;
+    height: 62svh;
+    min-height: 20rem;
+    max-height: 34rem;
+  }
+
+  .hero__name {
+    font-size: var(--t-hero);
+    font-weight: 300;
+    line-height: var(--lh-tight);
+    letter-spacing: -0.022em;
+  }
+  .hero__role {
+    margin-top: var(--s-5);
+    font-size: var(--t-lead);
+    line-height: 1.4;
+  }
+  .hero__fields {
+    margin-top: var(--s-1);
+    color: var(--c-dim);
+    line-height: 1.5;
+  }
+  .hero__tagline {
+    max-width: 34rem;
+    margin-top: var(--s-5);
+    font-family: var(--f-display);
+    font-size: 1.3125rem;
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--c-star);
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
+  }
+  .hero__caption {
+    max-width: 30rem;
+    margin-top: var(--s-6);
+    font-size: var(--t-xs);
+    line-height: 1.5;
+    color: var(--c-dim);
+  }
+
+  /* Wide screens: the sky fills the stage, text sits over its quiet left side. */
+  @media (min-width: 56rem) {
+    .hero { min-height: min(calc(100svh - var(--header-h)), 54rem); }
+    .hero__scene {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      height: auto;
+      max-height: none;
+    }
+    .hero__scene::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--c-night) 0%, rgb(7 11 20 / 0.78) 30%, transparent 58%);
+      pointer-events: none;
+    }
+    .hero__content {
+      justify-content: space-between;
+      padding-block: var(--s-9) var(--s-5);
+      pointer-events: none;
+    }
+    .hero__text { max-width: 38rem; }
+    .hero__content :global(a) { pointer-events: auto; }
+  }
+</style>

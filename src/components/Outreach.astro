@@ -1,0 +1,115 @@
+---
+import Section from './Section.astro';
+import EntryList from './EntryList.astro';
+import { useT, type Lang } from '../i18n/ui';
+import { onWeb, profile } from '../lib/profile';
+import { loc } from '../lib/typo';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const { items, videos } = profile.outreach;
+const channel = profile.links.find((l) => l.id === 'youtube');
+const entries = onWeb(items).map((i) => ({
+  when: i.period,
+  title: loc(i.title, lang),
+  lines: [loc(i.detail, lang)],
+}));
+---
+
+<Section id="outreach" title={t('outreach.title')}>
+  <h3 class="sub">{t('outreach.videos')}</h3>
+  <ul class="videos">
+    {
+      videos.map((v) => (
+        <li>
+          {v.youtube_id ? (
+            <a class="video" href={`https://www.youtube.com/watch?v=${v.youtube_id}`} data-youtube={v.youtube_id} data-title={v.title}>
+              <span class="video__frame">
+                <img src={`https://i.ytimg.com/vi/${v.youtube_id}/hqdefault.jpg`} alt="" loading="lazy" decoding="async" width="480" height="360" />
+                <span class="video__play" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+                </span>
+              </span>
+              <span class="video__title"><span class="visually-hidden">{t('outreach.play')}: </span><span lang="cs">{v.title}</span></span>
+            </a>
+          ) : (
+            channel && <a class="video video--channel" href={channel.url}><span class="video__title" lang="cs">{v.title}</span><span>{t('outreach.channel')}</span></a>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+
+  <h3 class="sub sub--next">{t('outreach.activities')}</h3>
+  <EntryList entries={entries} />
+</Section>
+
+<script>
+  // Lite embed: the YouTube player (no-cookie domain) loads only after a click.
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-youtube]')) {
+    link.addEventListener('click', (e) => {
+      if (e.ctrlKey || e.metaKey || e.shiftKey) return;
+      e.preventDefault();
+      const frame = link.querySelector('.video__frame');
+      if (!frame) return;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${link.dataset.youtube}?autoplay=1&rel=0`;
+      iframe.title = link.dataset.title ?? '';
+      iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      iframe.allowFullscreen = true;
+      const holder = document.createElement('div');
+      holder.className = 'video__frame';
+      holder.append(iframe);
+      link.before(holder);
+      frame.remove();
+      iframe.focus();
+    });
+  }
+</script>
+
+<style>
+  .sub { margin-bottom: var(--s-5); font-size: var(--t-h3); }
+  .sub--next { margin-top: var(--s-8); }
+
+  .videos { display: grid; gap: var(--s-6); max-width: 52rem; }
+  @media (min-width: 40rem) {
+    .videos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  .video { display: grid; gap: var(--s-3); color: var(--c-star); text-decoration: none; }
+  .video:hover .video__title { color: var(--c-ice); }
+  .videos :global(.video__frame) {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-md);
+    background: var(--c-deep);
+  }
+  .videos :global(.video__frame img),
+  .videos :global(.video__frame iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    object-fit: cover;
+  }
+  .video__play {
+    position: absolute;
+    left: var(--s-3);
+    bottom: var(--s-3);
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--c-night);
+    color: var(--c-ice);
+    border: 1px solid var(--c-line-strong);
+  }
+  .video:hover .video__play { background: var(--c-ice); color: var(--c-night); }
+  .video__title { line-height: 1.4; }
+  .video--channel { padding: var(--s-5); border: 1px solid var(--c-line); border-radius: var(--r-md); }
+</style>

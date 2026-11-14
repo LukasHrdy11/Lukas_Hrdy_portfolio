@@ -1,0 +1,166 @@
+---
+import Section from './Section.astro';
+import VizGlyph from './VizGlyph.astro';
+import { useT, type Lang } from '../i18n/ui';
+import { localPath, withBase } from '../lib/paths';
+import { onWeb, profile } from '../lib/profile';
+import { loc } from '../lib/typo';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const featured = onWeb(profile.featured_projects);
+const others = onWeb(profile.other_projects);
+---
+
+<Section id="projects" title={t('projects.title')}>
+  <ul class="featured">
+    {
+      featured.map((p) => (
+        <li class="card">
+          <div class="card__preview"><VizGlyph kind={p.visualization} /></div>
+          <h3 class="card__title">
+            <a href={localPath(lang, `/projects/${p.slug}/`)}>{loc(p.title, lang)}</a>
+          </h3>
+          <p class="card__meta">
+            <span class="mono">{p.period.trim()}</span>
+            <span>{loc(p.org, lang)}</span>
+          </p>
+          <p class="card__summary">{loc(p.summary, lang)}</p>
+          <ul class="tags">{p.tags.map((tag) => <li>{tag}</li>)}</ul>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h3 class="other-title">{t('projects.other')}</h3>
+  <ul class="others">
+    {
+      others.map((p) => (
+        <li id={`project-${p.slug}`} class="other">
+          <div class="other__text">
+            <h4 class="other__name">{loc(p.title, lang)}</h4>
+            <p class="card__meta">
+              <span class="mono">{p.period.trim()}</span>
+              <span>{loc(p.org, lang)}</span>
+            </p>
+            <p class="card__summary">{loc(p.summary, lang)}</p>
+            <ul class="tags">{p.tags.map((tag) => <li>{tag}</li>)}</ul>
+          </div>
+          {p.image && (
+            <a class="other__figure" href={withBase(p.image.src)} data-zoom aria-label={t('projects.enlarge')}>
+              <img src={withBase(p.image.src)} alt={loc(p.image.alt, lang)} loading="lazy" decoding="async" />
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+
+  <dialog class="zoom" aria-label={t('projects.enlarge')}>
+    <form method="dialog"><button class="button button--quiet">{t('projects.close')}</button></form>
+    <img alt="" />
+  </dialog>
+</Section>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('dialog.zoom');
+  const big = dialog?.querySelector('img');
+  if (dialog && big && typeof dialog.showModal === 'function') {
+    for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-zoom]')) {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        big.src = link.href;
+        big.alt = link.querySelector('img')?.alt ?? '';
+        dialog.showModal();
+      });
+    }
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+  }
+</script>
+
+<style>
+  .featured {
+    display: grid;
+    gap: var(--s-7) var(--s-6);
+  }
+  @media (min-width: 44rem) {
+    .featured { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  .card { position: relative; }
+  .card__preview {
+    padding: var(--s-4);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-md);
+    background: var(--c-deep);
+    transition: border-color var(--dur) var(--ease);
+  }
+  .card:hover .card__preview,
+  .card:focus-within .card__preview { border-color: var(--c-ice); }
+  .card__title {
+    margin-top: var(--s-4);
+    font-size: var(--t-h3);
+  }
+  .card__title a { color: var(--c-star); text-decoration: none; }
+  .card__title a::after { content: ''; position: absolute; inset: 0; }
+  .card:hover .card__title a { color: var(--c-ice); }
+
+  .card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 var(--s-3);
+    margin-top: var(--s-2);
+    font-size: var(--t-sm);
+    line-height: 1.5;
+    color: var(--c-dim);
+  }
+  .card__meta .mono { font-size: var(--t-xs); }
+  .card__summary { margin-top: var(--s-3); max-width: var(--measure); }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--s-4);
+    margin-top: var(--s-3);
+    font-family: var(--f-mono);
+    font-size: var(--t-xs);
+    color: var(--c-dim);
+  }
+
+  .other-title {
+    margin-top: var(--s-8);
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--c-line);
+    font-size: var(--t-h3);
+  }
+  .others { display: grid; gap: var(--s-6); margin-top: var(--s-6); }
+  .other { display: grid; gap: var(--s-4); scroll-margin-top: calc(var(--header-h) + var(--s-5)); }
+  .other__name { font-family: var(--f-text); font-size: var(--t-lead); font-weight: 500; line-height: 1.35; }
+  .other__figure {
+    display: block;
+    max-width: 22rem;
+    padding: var(--s-2);
+    border-radius: var(--r-md);
+    background: #fff; /* the plot has a light matplotlib background — framed as a printed figure */
+    cursor: zoom-in;
+  }
+  @media (min-width: 52rem) {
+    .other:has(.other__figure) { grid-template-columns: minmax(0, 1fr) 20rem; gap: var(--s-6); align-items: start; }
+  }
+
+  .zoom {
+    max-width: min(96vw, 70rem);
+    padding: var(--s-4);
+    border: 1px solid var(--c-line-strong);
+    border-radius: var(--r-md);
+    background: var(--c-deep);
+    color: var(--c-star);
+  }
+  .zoom::backdrop { background: rgb(3 5 10 / 0.82); }
+  .zoom form { display: flex; justify-content: flex-end; margin-bottom: var(--s-3); }
+  .zoom img { max-height: 80vh; margin-inline: auto; background: #fff; border-radius: var(--r-sm); }
+  .zoom .button { min-height: 2.25rem; cursor: pointer; font-family: inherit; }
+</style>

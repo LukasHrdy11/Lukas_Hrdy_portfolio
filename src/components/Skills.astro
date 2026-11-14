@@ -1,0 +1,28 @@
+---
+import Section from './Section.astro';
+import EntryList from './EntryList.astro';
+import { useT, type Lang } from '../i18n/ui';
+import { profile } from '../lib/profile';
+import { loc } from '../lib/typo';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const skills = profile.skills.map((s) => ({ when: loc(s.area, lang), title: loc(s.items, lang) }));
+const languages = profile.languages.map((l) => ({ when: loc(l.name, lang), title: loc(l.level, lang) }));
+---
+
+<Section id="skills" title={t('skills.title')}>
+  <EntryList entries={skills} mono={false} />
+  <h3 class="sub">{t('skills.languages')}</h3>
+  <EntryList entries={languages} mono={false} />
+  <h3 class="sub">{t('skills.stays')}</h3>
+  <ul class="stays">
+    {profile.language_stays.map((s) => <li>{loc(s, lang)}</li>)}
+  </ul>
+</Section>
+
+<style>
+  .sub { margin: var(--s-8) 0 var(--s-5); font-size: var(--t-h3); }
+  .stays { display: grid; gap: var(--s-3); max-width: var(--measure); color: var(--c-dim); font-size: var(--t-sm); }
+</style>

@@ -1,0 +1,114 @@
+---
+import LangSwitch from './LangSwitch.astro';
+import { useT, type Lang, type UiKey } from '../i18n/ui';
+import { localPath } from '../lib/paths';
+import { profile } from '../lib/profile';
+
+interface Props { lang: Lang; page?: string }
+const { lang, page } = Astro.props;
+const t = useT(lang);
+const home = localPath(lang);
+
+const sections: { id: string; key: UiKey }[] = [
+  { id: 'about', key: 'nav.about' },
+  { id: 'projects', key: 'nav.projects' },
+  { id: 'experience', key: 'nav.experience' },
+  { id: 'awards', key: 'nav.awards' },
+  { id: 'outreach', key: 'nav.outreach' },
+  { id: 'contact', key: 'nav.contact' },
+];
+---
+
+<header class="header">
+  <div class="container header__row">
+    <a class="header__name" href={home}>{profile.person.name}</a>
+
+    <button class="header__toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+      {t('nav.menu')}
+    </button>
+
+    <nav id="site-nav" class="header__nav" aria-label={t('nav.label')}>
+      <ul>
+        {sections.map((s) => <li><a href={`${home}#${s.id}`}>{t(s.key)}</a></li>)}
+      </ul>
+    </nav>
+
+    <LangSwitch lang={lang} page={page} />
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.header__toggle');
+  const nav = document.getElementById('site-nav');
+  if (toggle && nav) {
+    const set = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      nav.toggleAttribute('data-open', open);
+    };
+    toggle.addEventListener('click', () => set(toggle.getAttribute('aria-expanded') !== 'true'));
+    nav.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) set(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') set(false);
+    });
+  }
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--c-night) 94%, transparent);
+    border-bottom: 1px solid var(--c-line);
+  }
+  .header__row {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+    min-height: var(--header-h);
+  }
+  .header__name {
+    margin-right: auto;
+    font-family: var(--f-display);
+    font-size: 1.25rem;
+    color: var(--c-star);
+    text-decoration: none;
+  }
+  .header__nav ul {
+    display: flex;
+    gap: var(--s-5);
+    font-size: var(--t-sm);
+  }
+  .header__nav a {
+    display: block;
+    padding: var(--s-2) 0;
+    color: var(--c-dim);
+    text-decoration: none;
+  }
+  .header__nav a:hover { color: var(--c-star); }
+  .header__toggle {
+    display: none;
+    min-height: 2rem;
+    padding: 0 var(--s-3);
+    border: 1px solid var(--c-line-strong);
+    border-radius: var(--r-sm);
+    background: none;
+    color: var(--c-star);
+    font: inherit;
+    font-size: var(--t-sm);
+    cursor: pointer;
+  }
+
+  @media (max-width: 55.99rem) {
+    .header__row { flex-wrap: wrap; row-gap: 0; }
+    /* Without JS the links simply wrap onto a second row. */
+    .header__nav { order: 3; flex-basis: 100%; }
+    .header__nav ul { flex-wrap: wrap; gap: 0 var(--s-5); padding-bottom: var(--s-3); }
+    :global(.js) .header__toggle { display: block; }
+    :global(.js) .header__nav:not([data-open]) { display: none; }
+    :global(.js) .header__nav ul { flex-direction: column; font-size: var(--t-base); }
+    :global(.js) .header__nav a { padding: var(--s-3) 0; border-top: 1px solid var(--c-line); }
+  }
+</style>

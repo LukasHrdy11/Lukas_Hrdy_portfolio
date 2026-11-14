@@ -1,0 +1,40 @@
+---
+// Dated rows: timeline, awards, outreach, skills. "when" is shown as written in the YAML.
+export interface Entry {
+  when: string;
+  title: string;
+  href?: string;
+  lines?: string[];
+}
+interface Props { entries: Entry[]; mono?: boolean }
+const { entries, mono = true } = Astro.props;
+---
+
+<ul class="entries">
+  {
+    entries.map((e) => (
+      <li class="entry">
+        <p class:list={['entry__when', { mono }]}>{e.when.trim()}</p>
+        <div>
+          <p class="entry__title">{e.href ? <a href={e.href}>{e.title}</a> : e.title}</p>
+          {e.lines?.filter(Boolean).map((line) => <p class="entry__line">{line}</p>)}
+        </div>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .entries { display: grid; gap: var(--s-5); max-width: 52rem; }
+  .entry { display: grid; gap: var(--s-1); }
+  .entry__when { color: var(--c-dim); font-size: var(--t-sm); }
+  .entry__when.mono { font-size: var(--t-xs); line-height: 2; }
+  .entry__title { line-height: 1.45; }
+  .entry__title a { color: var(--c-star); }
+  .entry__title a:hover { color: var(--c-ice); }
+  .entry__line { color: var(--c-dim); font-size: var(--t-sm); line-height: 1.55; margin-top: 0.15rem; }
+
+  @media (min-width: 40rem) {
+    .entry { grid-template-columns: 10.5rem minmax(0, 1fr); gap: var(--s-5); }
+  }
+</style>

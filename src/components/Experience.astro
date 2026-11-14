@@ -1,0 +1,45 @@
+---
+import Section from './Section.astro';
+import EntryList, { type Entry } from './EntryList.astro';
+import { useT, type Lang } from '../i18n/ui';
+import { localPath } from '../lib/paths';
+import { onWeb, profile, type TimelineItem } from '../lib/profile';
+import { loc } from '../lib/typo';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+
+const featured = new Set(profile.featured_projects.map((p) => p.slug));
+const others = new Set(profile.other_projects.map((p) => p.slug));
+
+// Featured projects have their own page; the others are anchors in the project list.
+function projectHref(slug?: string): string | undefined {
+  if (!slug) return undefined;
+  if (featured.has(slug)) return localPath(lang, `/projects/${slug}/`);
+  if (others.has(slug)) return `${localPath(lang)}#project-${slug}`;
+  return undefined;
+}
+
+const toEntry = (item: TimelineItem): Entry => ({
+  when: item.period,
+  title: loc(item.title, lang),
+  href: projectHref(item.project),
+  lines: [
+    loc(item.org, lang),
+    item.supervisor ? `${t('project.supervisor')}: ${item.supervisor}` : '',
+  ],
+});
+---
+
+<Section id="experience" title={t('experience.title')}>
+  <h3 class="sub">{t('experience.research')}</h3>
+  <EntryList entries={onWeb(profile.experience).map(toEntry)} />
+  <h3 class="sub sub--next">{t('experience.education')}</h3>
+  <EntryList entries={onWeb(profile.education).map(toEntry)} />
+</Section>
+
+<style>
+  .sub { margin-bottom: var(--s-5); font-size: var(--t-h3); }
+  .sub--next { margin-top: var(--s-8); }
+</style>

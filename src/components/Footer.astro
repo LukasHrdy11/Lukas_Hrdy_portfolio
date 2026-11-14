@@ -1,0 +1,114 @@
+---
+import LangSwitch from './LangSwitch.astro';
+import { useT, type Lang } from '../i18n/ui';
+import { cvUrl } from '../lib/cv';
+import { onWeb, profile } from '../lib/profile';
+
+interface Props { lang: Lang; page?: string }
+const { lang, page } = Astro.props;
+const t = useT(lang);
+const { person } = profile;
+
+// The address never appears in the HTML as plain text: both halves are stored reversed
+// and the mailto link is assembled in the browser.
+const reverse = (s: string) => [...s].reverse().join('');
+const [user, domain] = person.email.split('@');
+
+const cvs = [
+  { url: cvUrl('en'), label: t('contact.cvEn') },
+  { url: cvUrl('cs'), label: t('contact.cvCs') },
+].filter((cv) => cv.url);
+const year = new Date().getFullYear();
+---
+
+<footer id="contact" class="footer" aria-labelledby="contact-title">
+  <div class="container footer__grid">
+    <h2 id="contact-title" class="footer__title">{t('contact.title')}</h2>
+
+    <div class="footer__body">
+      <p class="footer__lead">{t('contact.lead')}</p>
+      <p class="footer__email">
+        <a data-email-user={reverse(user)} data-email-domain={reverse(domain)} hidden></a>
+        <noscript>{t('contact.emailNoJs')}</noscript>
+      </p>
+
+      <ul class="footer__links">
+        {onWeb(profile.links).map((link) => <li><a href={link.url} rel="me">{link.label}</a></li>)}
+        {cvs.map((cv) => <li><a href={cv.url}>{cv.label}</a></li>)}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer__base">
+    <p>© {year} {person.name}</p>
+    <LangSwitch lang={lang} page={page} />
+    <a href="#main">{t('footer.top')}</a>
+  </div>
+</footer>
+
+<script>
+  const reverse = (s: string) => [...s].reverse().join('');
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('a[data-email-user]')) {
+    const address = `${reverse(link.dataset.emailUser ?? '')}@${reverse(link.dataset.emailDomain ?? '')}`;
+    link.href = `mailto:${address}`;
+    link.textContent = address;
+    link.hidden = false;
+  }
+</script>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--c-line);
+    background: linear-gradient(180deg, var(--c-night), var(--c-deep));
+  }
+  .footer__grid {
+    display: grid;
+    gap: var(--s-5);
+    padding-block: var(--s-8);
+  }
+  .footer__title { font-size: var(--t-h2); }
+  .footer__lead { color: var(--c-dim); }
+  .footer__email {
+    margin-top: var(--s-2);
+    min-height: 2.6rem;
+    font-family: var(--f-display);
+    font-size: clamp(1.375rem, 1rem + 2.2vw, 2.25rem);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .footer__email a { color: var(--c-star); text-decoration-color: var(--c-line-strong); }
+  .footer__email a:hover { color: var(--c-ice); }
+  .footer__email noscript { font-family: var(--f-text); font-size: var(--t-base); color: var(--c-dim); }
+  .footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-6);
+    margin-top: var(--s-6);
+  }
+  .footer__base {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3) var(--s-5);
+    padding-block: var(--s-5);
+    border-top: 1px solid var(--c-line);
+    font-size: var(--t-sm);
+    color: var(--c-dim);
+  }
+  .footer__base p { margin-right: auto; }
+  .footer__base > a { color: var(--c-dim); }
+  .footer__base > a:hover { color: var(--c-star); }
+
+  @media (min-width: 64rem) {
+    .footer__grid {
+      grid-template-columns: var(--margin-col) minmax(0, 1fr);
+      gap: var(--s-7);
+      padding-block: var(--s-9);
+    }
+    .footer__title {
+      font-size: var(--t-h3);
+      font-style: italic;
+      color: var(--c-dim);
+    }
+  }
+</style>
