@@ -24,7 +24,10 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      # Phase 4: install TeX Live here, then this builds public/cv/*.pdf.
+      - name: Install TeX Live (for the CV PDFs)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra tex-gyre texlive-lang-czechslovak texlive-lang-english latexmk
       - name: Build CV PDFs
         run: npm run cv
       - name: Build site

@@ -1,6 +1,7 @@
 ---
 import LangSwitch from './LangSwitch.astro';
 import { useT, type Lang, type UiKey } from '../i18n/ui';
+import { cvUrl } from '../lib/cv';
 import { localPath } from '../lib/paths';
 import { profile } from '../lib/profile';
 
@@ -8,6 +9,7 @@ interface Props { lang: Lang; page?: string }
 const { lang, page } = Astro.props;
 const t = useT(lang);
 const home = localPath(lang);
+const cv = cvUrl(lang);
 
 const sections: { id: string; key: UiKey }[] = [
   { id: 'about', key: 'nav.about' },
@@ -30,6 +32,7 @@ const sections: { id: string; key: UiKey }[] = [
     <nav id="site-nav" class="header__nav" aria-label={t('nav.label')}>
       <ul>
         {sections.map((s) => <li><a href={`${home}#${s.id}`}>{t(s.key)}</a></li>)}
+        {cv && <li><a href={cv} aria-label={t('hero.cv')}>{t('nav.cv')}</a></li>}
       </ul>
     </nav>
 

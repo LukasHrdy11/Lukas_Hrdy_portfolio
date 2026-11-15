@@ -6,6 +6,10 @@
 #   - Každý text má dvě verze:  cs: "česky"   en: "English"
 #   - Položky se zobrazují v tom pořadí, v jakém jsou tady.
 #   - `cv: false`  = položka jen na webu, ne v CV.
+#     (U projektu: `cv: false` vynechá v CV jeho shrnutí; řádek v `experience` zůstává.
+#      CV: shrnutí projektu se tiskne pod položkou `experience`, která na něj odkazuje
+#      přes `project:`; projekty bez takové položky jdou do sekce „Další projekty“.
+#      CV se musí vejít na 2 strany, jinak `npm run cv` skončí chybou.)
 #   - `web: false` = položka jen v CV, ne na webu.
 #   - Po změně: git add . && git commit -m "..." && git push
 #     → GitHub Actions automaticky postaví web i CV (cca 2 min).
@@ -218,7 +222,7 @@ other_projects:
     summary:
       cs: "Tvorba fotometrického atlasu proměnných hvězd."
       en: "Building a photometric atlas of variable stars."
-    cv: true
+    cv: false   # v CV je tato stáž už v sekci Zkušenosti; shrnutí by jen opakovalo její název
 
   - slug: starchip
     title:

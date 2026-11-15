@@ -1,0 +1,47 @@
+% CV template — filled by scripts/build-cv.mjs from content/profile.yaml.
+% Do not put content here; edit the YAML. Placeholders are upper-case names in double angle brackets.
+\documentclass[10pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[<<BABEL>>]{babel}
+\usepackage{xcolor}
+\usepackage[a4paper, top=1.5cm, bottom=1.5cm, left=2cm, right=2cm]{geometry}
+\usepackage{microtype}
+\usepackage{needspace}
+\usepackage{tgpagella}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={<<PDFTITLE>>}, pdfauthor={<<PDFAUTHOR>>}, pdflang={<<PDFLANG>>}}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\emergencystretch}{2em}
+\raggedbottom
+
+\definecolor{bl}{rgb}{0.16, 0.32, 0.75}
+
+% Section heading: short blue bar + bold title (kept with the entries that follow).
+\newcommand{\cvsection}[1]{%
+  \par\vspace{0.6em}\needspace{4\baselineskip}%
+  \noindent\textcolor{bl}{\rule{0.13\linewidth}{5pt}}\hspace{0.9em}\textbf{\Large #1}%
+  \par\nopagebreak\vspace{0.35em}}
+
+% One entry: date column + content column. Entries never break across pages.
+\newlength{\cvdatew}
+\setlength{\cvdatew}{2.9cm}
+\newcommand{\cventry}[2]{%
+  \par\noindent
+  \begin{minipage}[t]{\cvdatew}\raggedright #1\strut\end{minipage}\hfill
+  \begin{minipage}[t]{\dimexpr\linewidth-\cvdatew-0.4cm\relax}#2\strut\end{minipage}%
+  \par\vspace{3pt}}
+
+% Full-width line (no date column).
+\newcommand{\cvline}[1]{\par\noindent #1\par\vspace{3pt}}
+
+\begin{document}
+
+<<HEADER>>
+
+<<BODY>>
+
+\end{document}
