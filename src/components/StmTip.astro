@@ -2,12 +2,12 @@
 // AFM/STM project figure (PLAN.md §6.4): a deliberately simplified constant-current feedback sketch.
 import VizGlyph from './VizGlyph.astro';
 import { useT, type Lang } from '../i18n/ui';
-import { czechTypo } from '../lib/typo';
+import { typoFor } from '../lib/typo';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useT(lang);
-const typo = (s: string) => (lang === 'cs' ? czechTypo(s) : s);
+const typo = typoFor(lang);
 ---
 
 <div class="stm" data-stm data-lang={lang}>

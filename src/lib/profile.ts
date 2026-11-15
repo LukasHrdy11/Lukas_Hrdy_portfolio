@@ -31,7 +31,7 @@ export interface OtherProject {
   supervisor?: string;
   tags: string[];
   summary: L;
-  image?: { src: string; alt: L };
+  image?: { src: string; alt: L; width?: number; height?: number };
   web?: boolean;
 }
 

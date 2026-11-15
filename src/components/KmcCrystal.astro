@@ -4,12 +4,12 @@
 import VizGlyph from './VizGlyph.astro';
 import { useT, type Lang, type UiKey } from '../i18n/ui';
 import { withBase } from '../lib/paths';
-import { czechTypo } from '../lib/typo';
+import { typoFor } from '../lib/typo';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useT(lang);
-const tt = (key: UiKey) => (lang === 'cs' ? czechTypo(t(key)) : t(key));
+const tt = (key: UiKey) => typoFor(lang)(t(key));
 
 // Order matches `runs` in the data file.
 const cases = ['neutral', 'e_es_dop0.6', 'e_s_dop2.1'];

@@ -8,12 +8,15 @@ import '@fontsource/ibm-plex-sans/latin-ext-500.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-ext-400.css';
 import '../styles/global.css';
+// The name in the hero is the largest text on the page; preloading its font avoids a late swap.
+import displayLatin from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url';
+import displayLatinExt from '@fontsource-variable/newsreader/files/newsreader-latin-ext-opsz-normal.woff2?url';
 
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { LANGS, useT, type Lang } from '../i18n/ui';
-import { localPath, neutralPath } from '../lib/paths';
-import { profile } from '../lib/profile';
+import { localPath, neutralPath, withBase } from '../lib/paths';
+import { onWeb, profile } from '../lib/profile';
 import { loc } from '../lib/typo';
 
 interface Props {
@@ -28,10 +31,26 @@ interface Props {
 const { lang, title, description, page: pageOverride, noindex = false } = Astro.props;
 const t = useT(lang);
 const name = profile.person.name;
-const pageTitle = title ? `${title} — ${name}` : name;
-const pageDescription = description ?? loc(profile.person.tagline, lang);
+const headline = loc(profile.person.headline, lang);
+const pageTitle = title ? `${title} — ${name}` : `${name} — ${headline.split(' · ')[0]}`;
+const pageDescription = description ?? `${headline}. ${loc(profile.person.tagline, lang)}`;
 const page = pageOverride ?? neutralPath(Astro.url.pathname);
 const absolute = (l: Lang) => new URL(localPath(l, page), Astro.site).href;
+const asset = (path: string) => new URL(withBase(path), Astro.site).href;
+const ogLocale = { en: 'en_GB', cs: 'cs_CZ' } as const;
+
+// Structured data for search engines, on the home pages only. No e-mail here (privacy rule).
+const personLd =
+  page === '/' && !noindex
+    ? JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name,
+        url: absolute(lang),
+        description: headline,
+        sameAs: onWeb(profile.links).map((link) => link.url),
+      })
+    : null;
 ---
 
 <!doctype html>
@@ -42,9 +61,28 @@ const absolute = (l: Lang) => new URL(localPath(l, page), Astro.site).href;
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
     <meta name="theme-color" content="#070b14" />
+    <meta name="color-scheme" content="dark" />
+    {[displayLatin, displayLatinExt].map((font) => <link rel="preload" href={font} as="font" type="font/woff2" crossorigin />)}
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={withBase('/favicon-32.png')} sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
     {noindex && <meta name="robots" content="noindex" />}
     {!noindex && <link rel="canonical" href={absolute(lang)} />}
     {!noindex && LANGS.map((l) => <link rel="alternate" hreflang={l} href={absolute(l)} />)}
+    {!noindex && <link rel="alternate" hreflang="x-default" href={absolute('en')} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    {!noindex && <meta property="og:url" content={absolute(lang)} />}
+    <meta property="og:locale" content={ogLocale[lang]} />
+    {LANGS.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
+    <meta property="og:image" content={asset('/og.jpg')} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t('hero.sceneAlt')} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {personLd && <script is:inline type="application/ld+json" set:html={personLd} />}
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>

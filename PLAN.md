@@ -13,11 +13,12 @@
 | 2 Hero: live 3D Solar System | ✅ done 2026-11-14 | `SolarSystem.astro` + `src/scripts/solar-system.ts` (lazy three.js), math in `src/lib/ephemeris.ts`, acceptance checks `npm run check:ephemeris`. Wheel zoom only after a click on the scene (or Ctrl); touch drag rotates horizontally only; clock clamped to 1800–2050; comet shown ±6 yr around perihelion |
 | 3 Project visualizations (3a kMC ⏸, 3b rest) | ✅ done 2026-11-14 | `KmcCrystal` (three.js), `DeuteronChart`, `StmTip`, `LightCurve` (+ `src/scripts/*`, shared `chart.ts`; d3 submodules `d3-array d3-scale d3-shape` only). Ephemerides subpage keeps its static `VizGlyph` (hero is its visualization). YouTube lite embeds live in `Outreach.astro` |
 | 4 CV generator (YAML → 2 PDFs) + CI | ✅ done 2026-11-15 | `scripts/build-cv.mjs` + `cv/template.tex` → `public/cv/*.pdf` (gitignored, built in CI after a TeX Live install). 10 pt instead of the reference 11 pt so EN fits 2 pages; the build fails if a PDF exceeds 2 pages. Project `cv: false` drops only its summary in the CV. CV link in the header via `src/lib/cv.ts` |
-| 5 Polish, a11y, SEO, final review | ⬜ todo | |
+| 5 Polish, a11y, SEO, final review | ✅ done 2026-11-15 | OG/Twitter meta, `public/og.jpg` (re-render with `npm run og`: headless Chrome on the dev server), favicon, `sitemap.xml` + `robots.txt` endpoints, hreflang + x-default, Person JSON-LD, font preload, `typoFor`/`bindUnits` in `src/lib/typo.ts`. Audited at 360/768/1280 px (overflow, contrast, names, CLS, reduced motion) |
 
 Feedback log (Lukáš's review comments that change the plan go here):
 - 2026-11-14: the deuteron internship was at the Institute of Physics (Fyzikální ústav AV ČR), not the Nuclear Physics Institute — fixed in `content/profile.yaml`.
 - 2026-11-14 (phase 2 review): from now on every phase must be self-checked in the browser with Claude in Chrome before the ⏸ message (protocol step 3); the earlier "no screenshots" rule is dropped.
+- 2026-11-15: IWAA workshops moved from Experience to Awards, the TU Chemnitz practical course to language stays, CCD photometry to Skills (web and CV, single YAML source).
 - 2026-11-14: Lukáš asked whether a live interactive simulation is possible; a small in-browser kMC (clearly labelled as a simplified model) was offered as an optional addition to phase 3 — not decided, ask before building.
 
 ---

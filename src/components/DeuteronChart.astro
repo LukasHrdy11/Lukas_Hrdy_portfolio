@@ -4,12 +4,12 @@
 import VizGlyph from './VizGlyph.astro';
 import deuteron from '../../public/data/deuteron.json';
 import { useT, type Lang } from '../i18n/ui';
-import { czechTypo } from '../lib/typo';
+import { typoFor } from '../lib/typo';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = useT(lang);
-const typo = (s: string) => (lang === 'cs' ? czechTypo(s) : s);
+const typo = typoFor(lang);
 
 const fmt = (v: number, digits: number) =>
   new Intl.NumberFormat(lang, { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(v).replace('-', '−');

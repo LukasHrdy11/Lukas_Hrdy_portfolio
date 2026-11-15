@@ -49,7 +49,7 @@ const others = onWeb(profile.other_projects);
           </div>
           {p.image && (
             <a class="other__figure" href={withBase(p.image.src)} data-zoom aria-label={t('projects.enlarge')}>
-              <img src={withBase(p.image.src)} alt={loc(p.image.alt, lang)} loading="lazy" decoding="async" />
+              <img src={withBase(p.image.src)} alt={loc(p.image.alt, lang)} width={p.image.width} height={p.image.height} loading="lazy" decoding="async" />
             </a>
           )}
         </li>

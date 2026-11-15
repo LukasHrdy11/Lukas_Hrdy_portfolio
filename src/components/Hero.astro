@@ -4,7 +4,7 @@ import { useT, type Lang } from '../i18n/ui';
 import { cvUrl } from '../lib/cv';
 import { localPath } from '../lib/paths';
 import { profile } from '../lib/profile';
-import { czechTypo, loc } from '../lib/typo';
+import { typoFor, loc } from '../lib/typo';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -15,7 +15,7 @@ const { person, links } = profile;
 const [role, ...fields] = loc(person.headline, lang).split(' · ');
 const github = links.find((l) => l.id === 'github');
 const cv = cvUrl(lang);
-const typo = (text: string) => (lang === 'cs' ? czechTypo(text) : text);
+const typo = typoFor(lang);
 ---
 
 <section class="hero" aria-labelledby="hero-name">
